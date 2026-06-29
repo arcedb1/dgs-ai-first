@@ -111,3 +111,10 @@ Sugestões de melhoria:
 - Incluir um fluxo de fallback explícito: se houver conflito ou baixa confiança, o sistema deve encaminhar para a equipe humana sem tentar improvisar uma resposta.
 
 Se você quiser, eu posso transformar essa crítica em uma versão refinada do documento, preservando o conteúdo atual e adicionando apenas os pontos de melhoria.
+
+Usuário: Altere o arquivo considerando as Sugestões de melhoria:
+- Adicionar uma seção de governança documental com dono por fonte, ciclo de revisão, regra de versão e status de documento (ativo, em revisão, obsoleto).
+- Transformar o PoC em piloto de negócio com métricas concretas: tempo médio de resolução, taxa de resposta correta com citação, taxa de necessidade de intervenção humana e custo por consulta.
+- Incluir um fluxo de fallback explícito: se houver conflito ou baixa confiança, o sistema deve encaminhar para a equipe humana sem tentar improvisar uma resposta.
+
+Assistente: As sugestões de melhoria foram incorporadas em Prática 1/01-avaliacao-riscos.md.
