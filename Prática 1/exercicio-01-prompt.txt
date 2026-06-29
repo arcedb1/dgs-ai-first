@@ -1,0 +1,113 @@
+Conversa exportada - Exercício 01
+================================
+
+Usuário: Use a skill brainstorm e DM: faça UMA pergunta por vez, aguarde minha resposta, e vá refinando a análise incrementalmente.
+
+[Contexto do projeto e instruções detalhadas]
+
+Assistente: Vou criar um plano com 3 etapas e iniciar a fase de entendimento.
+
+Usuário: sim
+
+Assistente: Prossigamos com a Fase 1 — uma pergunta única para clarificar:
+
+Há restrições legais/regulatórias (LGPD) ou presença de dados pessoais sensíveis nos documentos que não podem ser indexados pelo assistente?
+
+Usuário: sim
+
+Assistente: Ótimo — uma pergunta rápida para detalhar isso:
+
+Que tipo de dados pessoais/sensíveis aparecem nos documentos? Escolha a opção que mais se aplica.
+a) Apenas PII básico (nomes, e-mails, telefones, CPF)
+b) Dados sensíveis (saúde, financeiros, RG, informações médicas)
+c) Mistura de ambos (PII + sensíveis)
+d) Há política interna que proíbe indexação de qualquer dado pessoal
+e) Outro (descrevo em seguida)
+
+Usuário: a)
+
+Assistente: Certo. Próxima pergunta única:
+
+O assistente deve tentar resolver conflitos entre versões/documentos por conta própria, ou apenas responder com a melhor evidência disponível e citar as fontes, deixando a decisão final ao atendente?
+
+Usuário: Toda vez que houver confltos, mostrar ao atendente para que ele tome a decisão
+
+Assistente: Contexto suficiente. Agora na Fase 2, começo com o risco 1.
+
+Risco 1: Alucinação — o assistente inventar procedimentos inexistentes
+- Probabilidade: Alta
+- Impacto: ...
+- Mitigação acionável: ...
+
+Usuário: sim
+
+Assistente: Perfeito. Próximo risco.
+
+Risco 2: Documentação contraditória entre versões — respostas que misturam regras de versões diferentes sem o atendente perceber
+- Probabilidade: Alta
+- Impacto: ...
+- Mitigação acionável: ...
+
+Usuário: sim
+
+Assistente: Certo. Terceiro risco.
+
+Risco 3: Dependência da qualidade dos documentos-fonte no pipeline de ingestão
+- Probabilidade: Alta
+- Impacto: ...
+- Mitigação acionável: ...
+
+Usuário: sim
+
+Assistente: Próximo risco.
+
+Risco 4: Expectativa da diretoria vs. o que a tecnologia realmente entrega hoje
+- Probabilidade: Alta
+- Impacto: ...
+- Mitigação acionável: ...
+
+Usuário: Incliuir no impacto do custo, o risco do preço do token ser maior que o custo do tempo dos atendentes
+
+Assistente: Certo, atualizando o impacto do custo do risco 4:
+
+- Custo: Médio — inclui também o risco de o preço do token/consulta da API Azure AI ultrapassar o ganho de tempo dos atendentes, tornando o projeto economicamente ineficiente mesmo que reduza o tempo de busca.
+
+Mantenho a validação desse risco antes de avançar para o quinto?
+
+Usuário: sim
+
+Assistente: Perfeito. Último risco.
+
+Risco 5: Context rot — degradação de qualidade quando o volume de documentação indexada é muito grande (~1.250 fontes)
+- Probabilidade: Média/Alta
+- Impacto: ...
+- Mitigação acionável: ...
+
+Usuário: validado. pode seguir
+
+Assistente: Documento de avaliação de riscos técnicos de IA — Kickoff interno NovaTech
+[Documento completo com 5 riscos, síntese e 3 perguntas para o Tech Lead]
+
+Usuário: salvar o ## Documento de avaliação de riscos técnicos de IA no diretório "Prática 1", com o nome 01-avaliacao-riscos.md
+
+Assistente: Arquivo salvo em Prática 1/01-avaliacao-riscos.md
+
+Usuário: analise os riscos e ações, e dê sugestões de melhoria.
+
+Assistente: Posicionamento steelmanned: a proposta só será viável se a governança das fontes, a política de conflitos de versão e os limites de escopo forem definidos antes do build; caso contrário, o projeto pode parecer tecnicamente interessante, mas falhar em confiança, custo e adoção.
+
+Desafios mais fortes:
+1. A análise trata os riscos como problemas de modelo, mas eles são, em grande parte, problemas de governança de conteúdo. Sem dono de cada fonte, processo de revisão e regra de versão, as mitigação de alucinação e conflito não sobrevivem ao tempo.
+2. A mitigação de alucinação está correta, mas ainda depende de um pressuposto frágil: "mostrar a fonte" elimina o risco de erro. Em operações reais, um atendente pode interpretar mal uma citação se o documento estiver antigo, ambíguo ou incompleto.
+3. O plano de PoC está muito fino para o nível de risco do projeto. Com 1.250 fontes e atualização recorrente, um PoC sem métrica de answerability, taxa de conflito e custo por consulta pode parecer bem-sucedido e ainda falhar no rollout.
+4. O impacto de custo está incompleto. Não basta considerar token; é preciso incluir custo de indexação, atualização contínua, reprocessamento de documentos e retrabalho operacional quando o sistema dá respostas ruins.
+5. O escopo parece muito amplo para o prazo de 3 meses. Um assistente com cobertura indiscriminada de todas as áreas provavelmente vai perder precisão; o melhor caminho costuma ser começar por um subconjunto de perguntas críticas e de alto volume.
+
+Sugestões de melhoria:
+- Adicionar uma seção de governança documental com dono por fonte, ciclo de revisão, regra de versão e status de documento (ativo, em revisão, obsoleto).
+- Definir gates de decisão antes de expandir o escopo: por exemplo, só avançar para mais fontes se a taxa de resposta com citação for acima de um limite definido e a taxa de conflito estiver sob controle.
+- Transformar o PoC em piloto de negócio com métricas concretas: tempo médio de resolução, taxa de resposta correta com citação, taxa de necessidade de intervenção humana e custo por consulta.
+- Reduzir o escopo inicial para um conjunto de temas críticos, em vez de tentar cobrir toda a base de conhecimento no primeiro ciclo.
+- Incluir um fluxo de fallback explícito: se houver conflito ou baixa confiança, o sistema deve encaminhar para a equipe humana sem tentar improvisar uma resposta.
+
+Se você quiser, eu posso transformar essa crítica em uma versão refinada do documento, preservando o conteúdo atual e adicionando apenas os pontos de melhoria.
