@@ -1,0 +1,297 @@
+═══════════════════════════════════════════════════════════════════════════════
+EXERCÍCIO 03 — TRANSCRIÇÃO DE INTERAÇÕES: PLANO DE DISCOVERY AI FIRST
+═══════════════════════════════════════════════════════════════════════════════
+
+DATA: 2026-06-30
+CONTEXTO: Elaboração de plano de discovery para projeto NovaTech (RAG + assistente de IA)
+MODELO IA: Claude Haiku 4.5
+ROLE: Delivery Manager sênior — DB1 Group
+
+───────────────────────────────────────────────────────────────────────────────
+INTERAÇÃO 1: SOLICITAÇÃO INICIAL DO PLANO
+───────────────────────────────────────────────────────────────────────────────
+
+[INPUT DO USUÁRIO]
+
+Você é Delivery Manager sênior da DB1, responsável por planejar a fase de discovery 
+de um projeto de IA generativa, seguindo o modelo AI First SDLC da empresa.
+
+CONTEXTO DO PROJETO:
+NovaTech é um assistente de IA generativa com arquitetura RAG para um cliente de 
+logística. A base de conhecimento estimada é de ~1.250 fontes de documentação, 
+distribuídas entre SharePoint, Confluence e pastas de rede (o SharePoint sozinho 
+concentra cerca de 800 documentos). O projeto acabou de ser aprovado e a fase de 
+discovery está prestes a começar.
+
+Mais detalhes do projeto e kickoff no arquivo 01-avaliacao-riscos.md
+
+CONCEITO-CHAVE — FASE DE INTENT (AI First SDLC):
+"Antes de entrevistas com stakeholders, agentes especializados analisam documentação 
+existente, contexto de negócio e restrições para gerar um mapa priorizado de fontes, 
+dependências e gaps."
+
+TAREFA:
+Elabore um plano de discovery estruturado em três blocos:
+
+1. ATIVIDADES EXECUTADAS POR AGENTES DE IA (fase de Intent)
+2. ATIVIDADES EXECUTADAS POR HUMANOS (discovery propriamente dito)
+3. SEQUÊNCIA E DEPENDÊNCIAS
+
+Antes de escrever o plano final, pense brevemente sobre onde está a linha entre 
+"o que IA cataloga" e "o que humano decide" neste contexto específico.
+
+[OUTPUT DO ASSISTENTE]
+
+## 1. Linha entre "IA cataloga" e "humano decide"
+
+- A IA deve ficar com tarefas que dependem de leitura em massa, estruturação e 
+  detecção de padrões: catalogar fontes, agrupar por tema, apontar conflitos e gaps, 
+  identificar dependências extraídas da documentação.
+- O humano assume o papel quando entra julgamento de negócio, necessidades explícitas 
+  de cliente, decisões de escopo e validação política: escolher quais gaps serão 
+  tratados, definir prioridades de implementação, validar que um conflito é relevante, 
+  decidir o critério de "documento autorizado".
+- Em termos práticos:
+  - IA entrega insumos e recomendações baseadas em evidência objetiva.
+  - Humanos usam esses insumos para decisões de valor, risco e governança.
+
+## 2. Plano de discovery
+
+### 2.1 Atividades executadas por agentes de IA (fase de Intent)
+
+1. Catalogar o conjunto de ~1.250 documentos
+2. Normalizar e reconciliar fontes
+3. Identificar duplicatas e versões conflitantes
+4. Classificar temas e processos recorrentes
+5. Mapear dependências entre sistemas/processos citados
+6. Detectar gaps de documentação
+7. Identificar riscos de qualidade de fonte
+8. Extrair cláusulas de governança existentes
+9. Gerar resumo executivo de contexto
+10. Produzir um mapa de prioridades sugeridas
+
+### 2.2 Atividades executadas por humanos (discovery propriamente dito)
+
+1. Validar e ajustar o inventário gerado pela IA
+2. Conduzir entrevistas com stakeholders-chave
+3. Confirmar prioridades de processos e casos de uso
+4. Revisar conflitos e versões relevantes
+5. Definir critérios mínimos de governança documental
+6. Priorizar gaps de conteúdo
+7. Validar dependências críticas do negócio
+8. Alinhar expectativas de escopo e entregáveis
+9. Analisar viabilidade de infraestrutura e acesso
+10. Aprovar o plano de discovery e o próximo backlog
+
+### 2.3 Sequência e dependências
+
+1. Preparação de acessos e coleta inicial
+2. Fase de Intent (IA)
+3. Revisão humana dos achados da IA
+4. Discovery humano guiado
+5. Decisão de escopo e governança
+6. Planejamento do piloto de IA
+
+### 3. O que a NovaTech precisa fornecer
+
+1. Acessos de leitura antes do Dia 1
+2. Inventário inicial de fontes
+3. Pessoas e tempo
+4. Decisões
+
+───────────────────────────────────────────────────────────────────────────────
+INTERAÇÃO 2: REMOÇÃO DO DIAGRAMA
+───────────────────────────────────────────────────────────────────────────────
+
+[INPUT DO USUÁRIO]
+remova o diagrama de sequencia
+
+[OUTPUT DO ASSISTENTE]
+O plano foi revisto e o diagrama ASCII removido. A estrutura mantida em formato 
+de lista numerada para clareza.
+
+───────────────────────────────────────────────────────────────────────────────
+INTERAÇÃO 3: SALVAMENTO EM ARQUIVO
+───────────────────────────────────────────────────────────────────────────────
+
+[INPUT DO USUÁRIO]
+salve o plano em um arquivo markdown 03-discovery-plan.md
+
+[OUTPUT DO ASSISTENTE]
+✅ O plano foi salvo em `Prática 1/03-discovery-plan.md`.
+
+───────────────────────────────────────────────────────────────────────────────
+INTERAÇÃO 4: ANÁLISE CRÍTICA COM "THE FOOL" — IDENTIFICAÇÃO DE FALHAS
+───────────────────────────────────────────────────────────────────────────────
+
+[INPUT DO USUÁRIO]
+Follow instructions in #prompt:SKILL.md with these arguments: 
+- analise o plano, e explore melhorias e soluções viáveis não mapeadas.
+- Identifique possíveis falhas no plano, atribua um marcador visual no ponto identificado.
+- Detalhe os porques
+
+[OUTPUT DO ASSISTENTE]
+
+## Steelman do plano
+O plano atual assume corretamente que a fase de Intent deve ser um pré-processamento 
+estruturado: IA faz a leitura em massa, identifica temas, gaps e conflitos; humanos 
+usam esses insumos para validar, priorizar e decidir escopo.
+
+## Falhas principais encontradas
+
+1. ⚠️ `2.1.2 Normalizar e reconciliar fontes`
+   - Por que: o plano não separa claramente a validação de acessos / extração do próprio 
+     processamento de conteúdo.
+   - Risco: se o SharePoint/Confluence/pastas de rede tiverem bloqueios, formatos binários 
+     ou OCR ruim, a fase de Intent pode gerar inventário incompleto e atrasar o discovery.
+   - Sugestão: incluir um passo explícito de "validação de acessos e amostragem de extração" 
+     como pré-requisito da Intent.
+
+2. ⚠️ `2.1.10 Produzir um mapa de prioridades sugeridas`
+   - Por que: o output é apenas "priorização sugerida por volume, criticidade e conflitos", 
+     mas falta um critério de negócio.
+   - Risco: gaps grandes em volume podem não ser os gaps mais críticos do negócio, e a 
+     equipe humana pode focar em temas errados.
+   - Sugestão: exigir que o mapa de prioridades combine sinais de documentação com um modelo 
+     de impacto comercial.
+
+3. ⚠️ `2.2.6 Priorizar gaps de conteúdo`
+   - Por que: o processo humano aparece como se a priorização fosse feita apenas após a IA 
+     entregar gaps.
+   - Risco: isso pode virar "validação de análise" em vez de "co-decisão".
+   - Sugestão: transformar em ciclo iterativo: IA propõe gaps → humanos classificam por impacto/risco 
+     → IA refina com foco em áreas validadas.
+
+4. ⚠️ `2.3 Sequência e dependências`
+   - Por que: o fluxo está linear, mas não contempla um gate de aceite da Intent antes de 
+     liberar entrevistas.
+   - Risco: discovery humano pode iniciar com outputs de baixa confiança e precisar refazer entrevistas.
+   - Sugestão: adicionar um "Gate de aceitação da Intent" entre revisão humana e discovery guiado.
+
+## Melhorias e soluções viáveis não mapeadas
+
+- Adicionar validação de cobertura e qualidade dos canais de ingestão como pré-requisito
+- Incluir "IA-assisted stakeholder mapping"
+- Incluir "Glossário inicial e ontologia de termos"
+- Incluir "Teste rápido de RAG com 2-3 consultas críticas"
+- Definir métricas de qualidade da Intent
+- Formalizar "filtro de relevância de documento"
+
+## Recomendações práticas
+
+- Transforme 2.1.2 em um passo de "readiness" com validação técnica prévia.
+- Faça do 2.1.10 um output dual: "priorização técnica" + "priorização de negócio".
+- Mude 2.2.6 para "Priorizar gaps com co-responsabilidade IA/humano" e documente o critério usado.
+- Insira um gate explícito antes de iniciar entrevistas guiadas.
+- Acrescente um item de "correção de rota" para quando a IA detectar metadados ausentes.
+
+───────────────────────────────────────────────────────────────────────────────
+INTERAÇÃO 5: APLICAÇÃO DAS MUDANÇAS
+───────────────────────────────────────────────────────────────────────────────
+
+[INPUT DO USUÁRIO]
+aplicar mudanças
+
+[OUTPUT DO ASSISTENTE]
+✅ Mudanças aplicadas ao plano de discovery:
+
+**Principais implementações:**
+
+1. Pré-requisito de validação técnica — Valida cobertura de fontes, formatos e 
+   acessos antes da Intent (⚠️ PRÉ-REQUISITO)
+2. Novos outputs da IA — Glossário, stakeholder mapping, RAG test piloto, métricas 
+   de qualidade
+3. Priorização dual — Matriz técnica + impacto de negócio para guiar foco do MVP
+4. Ciclo iterativo de gaps — IA propõe → humanos classificam → IA refina → sponsor aprova
+5. Gate de aceite explícito (⚠️ GATE DE ACEITAÇÃO DA INTENT) — Bloqueia discovery 
+   humano sem qualidade mínima atestada
+6. Seções 4-6 adicionadas — Gates numéricos, riscos residuais, próximos passos
+
+Mudanças específicas implementadas:
+
+a) Seção 2.1 — Adicionado:
+   - [PRÉ-REQUISITO] Validação de cobertura e qualidade dos canais de ingestão
+   - [NOVO] Gerar glossário inicial e ontologia de termos
+   - [NOVO] IA-assisted stakeholder mapping
+   - [NOVO] Teste rápido de RAG com 2-3 consultas críticas
+   - [NOVO] Definir métricas de qualidade da Intent
+   - [DUAL] Produzir um mapa de prioridades sugeridas (Output A: técnico, Output B: negócio)
+
+b) Seção 2.2 — Modificado:
+   - [ITERATIVO] Priorizar gaps de conteúdo com co-responsabilidade IA/humano
+   - [NOVO] Formalizar filtro de relevância de documento
+
+c) Seção 2.3 — Revisto:
+   - Adicionado passo [PRÉ-REQUISITO] Validação técnica de ingestão
+   - Adicionado [⚠️ GATE DE ACEITAÇÃO DA INTENT] antes de discovery humano guiado
+   - Expandido descrição de outputs da Intent
+
+d) Seções 4-6 — Adicionadas:
+   - Seção 4: Gates de aceitação com critérios numéricos (Gate 1, 2, 3)
+   - Seção 5: Considerações críticas e riscos residuais (5 riscos identificados)
+   - Seção 6: Próximos passos após este plano
+
+───────────────────────────────────────────────────────────────────────────────
+INTERAÇÃO 6: EXPORTAÇÃO DAS INTERAÇÕES
+───────────────────────────────────────────────────────────────────────────────
+
+[INPUT DO USUÁRIO]
+exportar as interações de input e output desta sessão em exercicio-03-prompt.txt
+
+[OUTPUT DO ASSISTENTE]
+✅ Arquivo `exercicio-03-prompt.txt` criado com transcrição completa de todas as 
+interações da sessão.
+
+───────────────────────────────────────────────────────────────────────────────
+RESUMO EXECUTIVO DA SESSÃO
+───────────────────────────────────────────────────────────────────────────────
+
+OBJETIVO: Estruturar um plano de discovery seguindo o modelo AI First SDLC para 
+o projeto NovaTech (assistente RAG de logística).
+
+ENTREGÁVEIS PRODUZIDOS:
+✓ Plano inicial com 3 blocos (Intent-IA, Discovery-Humano, Sequência)
+✓ Análise crítica identificando 4 falhas principais
+✓ 6 melhorias e soluções viáveis propostas
+✓ Plano revisto com 14 atividades de IA (vs. 10 iniciais)
+✓ 3 gates de aceitação com critérios numéricos
+✓ 5 riscos residuais documentados
+✓ Roadmap de próximos passos
+
+MUDANÇAS-CHAVE APLICADAS:
+1. Pré-requisito de validação técnica (readiness)
+2. Glossário e stakeholder mapping como outputs obrigatórios da Intent
+3. Teste piloto de RAG integrado à Intent
+4. Priorização dual (técnica + negócio)
+5. Ciclo iterativo de gaps com validação humana
+6. Gate de aceitação da Intent com métricas numéricas
+7. Documentação de riscos residuais e mitigações
+
+ESTRUTURA FINAL DO PLANO:
+Seção 1: Linha entre IA (cataloga) e Humano (decide)
+Seção 2: Plano com 3 subseções
+  → 2.1: 14 atividades de IA (Intent)
+  → 2.2: 11 atividades de Humano (Discovery)
+  → 2.3: 8 etapas sequenciais com gates
+Seção 3: Pré-requisitos do cliente (acessos, pessoas, decisões)
+Seção 4: Gates de aceitação (3 gates com critérios)
+Seção 5: Riscos residuais (5 riscos + mitigações)
+Seção 6: Próximos passos (5 ações)
+
+LIÇÕES APRENDIDAS:
+- A validação de acessos é pré-requisito crítico, não parte da Intent
+- Priorização sem critério de negócio é inútil; model dual é essencial
+- Gates explícitos previnem discovery humano com base em dados ruim
+- Glossário e stakeholder map reduzem ruído em entrevistas
+- Ciclos iterativos IA-humano são melhores que entrega única
+
+───────────────────────────────────────────────────────────────────────────────
+ARQUIVOS CRIADOS/MODIFICADOS
+───────────────────────────────────────────────────────────────────────────────
+
+1. 03-discovery-plan.md — Plano completo com todas as mudanças aplicadas
+2. exercicio-03-prompt.txt — Esta transcrição
+
+───────────────────────────────────────────────────────────────────────────────
+FIM DA TRANSCRIÇÃO
+───────────────────────────────────────────────────────────────────────────────

@@ -1,26 +1,25 @@
-Conversa registrada: solicitação de geração de e-mail de alinhamento para diretor da NovaTech.
+Exportação da conversa — Exercício 02
 
-Contexto:
-- Projeto: assistente de IA generativa com arquitetura RAG para NovaTech.
-- Base de conhecimento: ~1.250 fontes em SharePoint, Confluence e rede local.
-- Pedido do diretor: CEO viu demo do Copilot, espera que em 3 meses o atendimento não precise mais procurar nada manualmente e que o assistente "vai saber tudo".
-- Objetivo: escrever e-mail de resposta validando entusiasmo, explicando sem jargão por que assistente não "sabe tudo", explicando RAG, propondo critérios de sucesso mensuráveis e sugerindo próximo passo.
-- Restrições: 250-400 palavras, e-mail completo com assunto, saudação e fechamento, tom de parceiro confiável, sem jargão técnico não explicado.
+Input do usuário 1:
+"salvar email em arquivo markdown em 02-email.md"
 
-Rascunho gerado:
-- Assunto: Alinhamento inicial do assistente NovaTech
-- Saudação: Caro [Nome do Diretor],
-- Validação do entusiasmo destacando o valor do clima positivo e o impacto no projeto.
-- Analogia: colega experiente que monta respostas com base no que já foi escrito; não é uma enciclopédia pronta.
-- Explicação de RAG: o assistente busca trechos relevantes na base de conhecimento no momento da pergunta e os usa para formular a resposta, não decorando documentos.
-- Aviso sobre qualidade: depende da documentação; entrada ruim leva a saída ruim.
-- Critérios de sucesso sugeridos:
-  - >= 60% das respostas com citação de fonte verificável;
-  - < 10% das interações encaminhadas a humano por falta de confiança ou conflito;
-  - redução de >= 30% no tempo médio de busca manual do atendente.
-- Próximo passo: reunião de alinhamento de escopo e levantamento de 30-50 fontes prioritárias para o piloto.
+Output do assistente 1:
+- Criei o arquivo [Prática 1/02-email.md](Prática%201/02-email.md) com o conteúdo do e-mail em formato Markdown.
+- Confirmei que o arquivo foi salvo com sucesso.
 
-Observações:
-- Mantive o tom confiante, parceiro e acessível.
-- Evitei termos técnicos como embeddings, tokens e alucinação.
-- Mantive o e-mail dentro da faixa de palavras solicitada.
+Input do usuário 2:
+"exportar as interações de input e output desta conversa em exercicio-02-prompt.txt. Pode sobrescrever"
+
+Output do assistente 2:
+- Atualizei [Prática 1/exercicio-02-prompt.txt](Prática%201/exercicio-02-prompt.txt) com uma exportação estruturada da conversa.
+- O arquivo agora registra os inputs do usuário e os outputs da assistente para esta interação.
+
+Resumo do contexto da tarefa:
+- Projeto: assistente de IA generativa com arquitetura RAG para a NovaTech.
+- Objetivo: responder ao diretor de operações com um e-mail claro, acessível e alinhado com expectativas realistas.
+- Conteúdo tratado na resposta:
+  - validação do entusiasmo do cliente;
+  - explicação simples de por que o assistente não "sabe tudo";
+  - explicação objetiva do conceito de RAG;
+  - proposta de critérios de sucesso mensuráveis;
+  - sugestão de próximo passo concreto.
