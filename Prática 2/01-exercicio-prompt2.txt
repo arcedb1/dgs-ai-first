@@ -1,0 +1,106 @@
+Sessão exportada — Fluxo AI First NovaTech
+
+Arquivo base: 01-fluxo-ai-first-novatech.md
+
+Resumo da sessão:
+- Estruturação do fluxo AI First para o projeto NovaTech Assistant.
+- Definição de papéis, ferramentas e etapas do ciclo Spec → Plan → Tasks → Implement → Review → Deploy.
+- Inclusão de checkpoints humanos e validation gates.
+- Melhoria do processo com:
+  - checklists operacionais por gate;
+  - evidência mínima para aprovação;
+  - distinção entre rascunho e artefato aprovado;
+  - rollback e contingência;
+  - regras de uso de IA por categoria de informação;
+  - métricas de qualidade e custo;
+  - fluxo de exceção paralelo ao fluxo normal.
+
+Conteúdo principal consolidado:
+
+# Fluxo de Trabalho AI First — Projeto NovaTech Assistant
+
+**Autor:** Delivery Manager
+**Ciclo mapeado:** Spec → Plan → Tasks → Implement → Review → Deploy
+**Ferramentas do projeto:** GitHub Copilot, Claude (chat), Claude Cowork, Claude Design, Azure DevOps, GitHub
+
+## 1. Visão geral do fluxo
+
+O time é AI First, não AI Only: em cada etapa um agente de IA produz o rascunho e um humano específico decide se ele avança.
+
+## 2. Mapa por papel e etapa
+
+- Product Specialist: cria requirements e valida guardrails/spec.
+- Tech Lead: revisa viabilidade, planeja, aprova tasks e valida merge/deploy.
+- Desenvolvedor: implementa com Copilot e Claude, com apoio de MCP.
+- QA: valida critérios de teste e cobertura.
+- Delivery Manager: acompanha board e governança.
+
+## 3. Checkpoints humanos embutidos no fluxo
+
+Os 4 gates abaixo são o esqueleto do processo, mas devem operar como checklists executáveis.
+
+### Gate 1 — Spec → Plan
+- Quem aprova: Product Specialist
+- O que precisa estar presente: requisitos claros, critérios de aceite verificáveis, escopo delimitado, guardrails explícitos
+- Prazo máximo: até 24 horas úteis
+- Ação em caso de reprovação: spec volta a rascunho com comentários explícitos
+
+### Gate 2 — Tasks → Implement
+- Quem aprova: Tech Lead
+- O que precisa estar presente: tasks atômicas, dependências claras, critérios de aceitação, riscos e estimativas
+- Prazo máximo: até 24 horas úteis
+- Ação em caso de reprovação: tasks voltam para revisão/replanejamento
+
+### Gate 3 — Code → Merge
+- Quem aprova: Tech Lead
+- O que precisa estar presente: diff revisado, testes relevantes, evidências de validação, resposta aos comentários
+- Prazo máximo: até 48 horas úteis
+- Ação em caso de reprovação: PR retorna para ajuste e novo review
+
+### Gate 4 — Tests → Deploy
+- Quem aprova: QA e Tech Lead
+- O que precisa estar presente: cenários de teste, evidência de execução, riscos conhecidos
+- Prazo máximo: até 24 horas úteis
+- Ação em caso de reprovação: deploy bloqueado e retorno para correção
+
+### Evidência mínima exigida para aprovação
+- artefato final revisado;
+- lista objetiva de mudanças;
+- justificativa da IA usada para gerar o rascunho;
+- pontos pendentes ou riscos conhecidos;
+- evidência de validação, quando aplicável.
+
+### Rascunho vs artefato aprovado
+Qualquer saída gerada por IA entra como rascunho e só vira aprovada após revisão humana, registro explícito e atualização de status.
+
+### Rollback e contingência
+- voltar para a etapa anterior;
+- abrir issue de correção;
+- reexecutar validação do gate afetado;
+- bloquear o deploy se o risco for crítico.
+
+### Regras de uso de IA por categoria de informação
+- dados sensíveis, segredos, dados de cliente e documentos internos devem ter tratamento especial;
+- não é permitido enviar dados sensíveis a ferramentas externas sem aprovação e sem redaction;
+- decisões de negócio, arquitetura e risco não podem ser delegadas à IA sem validação humana.
+
+### Métricas de qualidade e custo
+- tempo médio de revisão por gate;
+- taxa de retrabalho ou reprovação;
+- número de artefatos reprovados;
+- tempo de resposta do assistente;
+- custo por ciclo ou por entrega.
+
+## 4. Fluxo de exceção
+
+O fluxo de exceção opera em paralelo ao fluxo normal e é acionado quando houver urgência, risco, falha ou bloqueio.
+
+Passos:
+1. Acionar a exceção
+2. Registrar contexto
+3. Aprovar a exceção
+4. Aplicar controles temporários
+5. Retornar ao fluxo normal
+
+Regra de ouro:
+Exceção não significa pular validação; significa validar com mais rigor, de forma explícita e com responsabilidade definida.

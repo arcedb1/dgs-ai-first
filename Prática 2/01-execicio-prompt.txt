@@ -1,0 +1,157 @@
+EXERCÍCIO 2.1 — DEFINIÇÃO DO WORKFLOW DE DESENVOLVIMENTO AI FIRST
+Projeto: NovaTech Assistant | Papel: Delivery Manager
+Exportado em: 03/07/2026
+
+================================================================
+TURNO 1
+================================================================
+
+[USUÁRIO]
+Analise os documentos de contexto add ao projeto.
+
+Elabore um fluxo de trabalho que mapeie, para cada papel do time:
+- Quais ferramentas de IA usa e em qual etapa do ciclo (Spec → Plan → Tasks → Implement → Review → Deploy)
+
+Usando o /brainstorming traga sugestões de como pode ser construído este fluxo, com o objetivo de ter um time mais eficiente, sem comprometer a qualidade das entregas.
+
+[ASSISTENTE]
+Leu os documentos de contexto do projeto (exercício completo, Anexo A, B e C) e montou o mapeamento por papel e etapa, salvo em "fluxo-ai-first-novatech.md":
+
+Visão geral do fluxo:
+- Claude (chat) — raciocínio, redação de specs/planos/tasks, análise crítica. Usado por todos os papéis, em todas as etapas.
+- GitHub Copilot — geração de código e testes dentro do editor. Só entra a partir de Tasks/Implement, e só para Dev e Tech Lead.
+- Claude Cowork — organização, tracking e checklists (papéis não-dev: DM, Product Specialist, QA).
+- Claude Design — mockups de interface (Product Specialist, na etapa de Spec).
+- Azure DevOps — board oficial de acompanhamento (todas as etapas, todos os papéis, mas quem escreve é DM/TL).
+- GitHub — repositório e CI/CD (Implement → Deploy).
+
+Mapa por papel e etapa:
+
+Product Specialist:
+- Spec: Claude (chat) escreve requirements.md; Claude Design gera mockup
+- Plan: Claude (chat) esclarece dúvidas de escopo levantadas pelo TL
+- Tasks: —
+- Implement: Claude (chat) responde dúvidas ad hoc de escopo
+- Review: Claude (chat) valida se o comportamento entregue respeita guardrails/spec
+- Deploy: Claude (chat) faz smoke check pós-deploy contra a spec
+
+Tech Lead:
+- Spec: Claude (chat) revisa viabilidade técnica do requirements.md
+- Plan: Claude (chat) escreve plan.md a partir do requirements.md + ADRs
+- Tasks: Claude (chat) revisa/aprova tasks.md (Gate 2)
+- Implement: GitHub Copilot para gerar/testar trechos de referência; Claude (chat) para AGENTS.md e skills
+- Review: GitHub (PR/code review) + Copilot como apoio; Claude (chat) para revisão de arquitetura (Gate 3)
+- Deploy: GitHub Actions/CI; aprovação final de deploy (Gate 4)
+
+Desenvolvedor:
+- Spec: —
+- Plan: Claude (chat) para explorar abordagens técnicas
+- Tasks: Claude (chat) converte plan.md em tasks.md; Copilot ajuda a quebrar em subtasks
+- Implement: GitHub Copilot (geração de código) + Claude (chat) para debugging/arquitetura, com MCP (filesystem/git/memory)
+- Review: GitHub Copilot para ajustar após comentários; Claude (chat) para refatorar
+- Deploy: GitHub (merge, dispara CI/CD)
+
+QA:
+- Spec: Claude (chat) avalia se verification criteria são testáveis
+- Plan: Claude (chat) inicia rascunho do test-plan.md a partir dos VCs
+- Tasks: Claude (chat) finaliza cenários de teste; Claude Cowork organiza rastreabilidade teste→VC
+- Implement: Claude (chat) escreve/revisa skill de geração de testes
+- Review: Claude (chat) + Claude Cowork validam cobertura e suficiência dos testes (Gate 4)
+- Deploy: Claude Cowork confirma sign-off de testes antes do deploy
+
+Delivery Manager:
+- Spec: Claude Cowork cria item de spec no board; Claude (chat) apoia definição de processo
+- Plan: Claude Cowork atualiza status do board (Rascunho→Em Revisão); Azure DevOps
+- Tasks: Azure DevOps cria work items a partir das tasks; Claude Cowork atualiza tracking (Gate 1/2)
+- Implement: Azure DevOps monitora progresso; Claude Cowork sinaliza bloqueios
+- Review: Claude Cowork mantém checklist de validation gates (Gate 3)
+- Deploy: Azure DevOps + Claude Cowork fecham o ciclo (status "Validada")
+
+Checkpoints humanos embutidos no fluxo:
+1. Gate 1 — Spec → Plan: Product Specialist aprova o requirements.md antes do Tech Lead gerar o plan.md.
+2. Gate 2 — Tasks → Implement: Tech Lead aprova o tasks.md antes do Dev iniciar a implementação.
+3. Gate 3 — Code → Merge: Tech Lead faz code review humano; PR precisa de 1 aprovação.
+4. Gate 4 — Tests → Deploy: QA valida cobertura e cenários de teste; Tech Lead aprova o deploy.
+
+Sessão de brainstorming (skill /brainstorming, Fase 1 — Entendimento):
+Pergunta 1: "Para começar o brainstorm: qual dimensão do fluxo você quer priorizar primeiro?"
+Resposta: Papéis e responsabilidades
+
+Pergunta 2: "O Tech Lead aprova os Gates 2, 3 e 4 sozinho. Qual risco de gargalo te preocupa mais?"
+Resposta: Não é esse o problema
+
+Pergunta 3: "Qual é o gargalo de papéis/responsabilidades que mais te preocupa nesse fluxo?"
+Resposta: Dev sobrecarregado de decisão
+
+Pergunta 4: "Quando os 2 devs divergem no uso do Copilot/quebra de tasks, qual consequência te preocupa mais?"
+Resposta: Qualidade inconsistente
+
+Fase 2 — Exploração de abordagens (apresentadas antes do usuário pedir para recomeçar):
+Abordagem 1 (Recomendada) — Checklist de autovalidação por task no Cowork, ligado ao SKILL.md relevante.
+Abordagem 2 — Par de revisão entre os 2 devs antes do Tech Lead.
+Abordagem 3 — Reforçar as skills Domain/Artifact para reduzir variância no próprio Copilot.
+
+================================================================
+TURNO 2
+================================================================
+
+[USUÁRIO]
+Vamos recomeçar..
+Neste momento quero definir montar um fluxo (visual) (Spec → Plan → Tasks → Implement → Review → Deploy) onde:
+- Defina quais as ferramentas de IA que serão utilizadas em cada etapa do ciclo
+- Qual(s) papéi(s) atuarão em cada etapa do ciclo
+
+[ASSISTENTE]
+Criou um diagrama visual (SVG) com as 6 etapas em sequência vertical — Spec, Plan, Tasks, Implement, Review, Deploy — cada uma com as ferramentas de IA usadas e os papéis atuantes, com selos âmbar marcando os validation gates (Gate 1 entre Spec e Plan, Gate 2 entre Tasks e Implement, Gate 4 entre Review e Deploy; Gate 3 embutido na etapa Review).
+
+================================================================
+TURNO 3
+================================================================
+
+[USUÁRIO]
+Sim
+crie um template de checklist de validation gates — pontos onde um humano obrigatoriamente revisa e aprova antes de avançar.
+
+O checklist deve incluir ao menos:
+- Gate entre Spec e Plan (quem aprova a spec antes de gerar o plano?)
+- Gate entre Tasks geradas por IA e início de implementação (quem valida que as tasks fazem sentido?)
+- Gate entre código gerado por agente e merge (quem faz code review?)
+- Gate entre testes gerados por IA e deploy (quem valida que os testes são suficientes?)
+
+[ASSISTENTE]
+Criou o arquivo "checklist-validation-gates.md" com um template reutilizável contendo os 4 gates (Spec→Plan, Tasks→Implement, Code→Merge, Tests→Deploy), cada um com aprovador, prazo (SLA), critérios de verificação e o que acontece em caso de reprovação, mais um resumo rápido em tabela ao final.
+
+================================================================
+TURNO 4
+================================================================
+
+[USUÁRIO]
+Ajuste o checklist para que cada gate, tenha:
+Quem aprova,
+O que verifica,
+Quanto tempo tem,
+E o que acontece se reprovar
+
+[ASSISTENTE]
+Reestruturou o "checklist-validation-gates.md" para que cada um dos 4 gates siga exatamente os 4 campos solicitados — Quem aprova, O que verifica, Quanto tempo tem, O que acontece se reprovar — mantendo o campo de registro de aprovação e o resumo rápido final.
+
+================================================================
+TURNO 5
+================================================================
+
+[USUÁRIO]
+[Anexo: mapa_politico_8.html]
+Com base no conteúdo fluxo IA First descrito no documento "Fluxo de Trabalho AI First — Projeto NovaTech Assistant".
+Crie um fluxo visual interativo em html, inspirado no arquivo em anexo.
+- Usar mesmo padrão de cores
+
+[ASSISTENTE]
+Analisou o HTML anexado (Mapa Político — Projeto Nexus: tema escuro, header/toolbar/painel lateral em D3, paleta com --bg, --surface, --accent indigo, cores semânticas verde/âmbar/vermelho e paleta categórica indigo/cyan/violeta/pink/laranja/teal) e criou "fluxo-ai-first-interativo.html": um fluxo interativo de 6 etapas com o mesmo padrão visual (tema escuro, header com badge do projeto, toolbar com filtros por Papel e por Ferramenta, painel lateral deslizante), selos âmbar clicáveis nos 4 validation gates que abrem o checklist completo, e cores reaproveitadas da mesma paleta categórica do arquivo de referência.
+
+================================================================
+ARQUIVOS GERADOS NESTA CONVERSA
+================================================================
+- fluxo-ai-first-novatech.md
+- checklist-validation-gates.md
+- fluxo-ai-first-interativo.html
+- 01-execicio-prompt.txt (este arquivo)

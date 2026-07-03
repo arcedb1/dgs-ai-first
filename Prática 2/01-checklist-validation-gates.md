@@ -16,6 +16,10 @@ Product Specialist (dono da spec)
 - [ ] Toda prior decision referenciada existe como ADR em `/docs/adr/`
 - [ ] Cada verification criterion é testável (o QA consegue escrever um caso de teste a partir dele, sem perguntar nada)
 - [ ] Termos de domínio usados batem com a linguagem ubíqua definida (sem ambiguidade tipo "Gold" = tier vs. metal)
+- [ ] O artefato está marcado como rascunho até a aprovação final
+- [ ] Há evidência mínima disponível para a aprovação (artefato revisado, mudanças listadas, riscos conhecidos)
+- [ ] Dados sensíveis, segredos ou informações internas não foram compartilhados sem redaction
+- [ ] Em caso de reprovação, o item segue o plano de rollback/correção e não avança para a próxima etapa
 
 **Quanto tempo tem**
 1 dia útil, a contar do momento em que a spec entra em "Em Revisão" no board
@@ -39,6 +43,9 @@ Tech Lead
 - [ ] Dependências entre tasks estão mapeadas e na ordem certa
 - [ ] As tasks juntas cobrem 100% do escopo do `plan.md` (nada ficou de fora)
 - [ ] Estimativas (P/M/G) são plausíveis dado o histórico do time
+- [ ] O `tasks.md` está marcado como rascunho até aprovação final
+- [ ] Há evidência mínima disponível para aprovação (tarefas executáveis, riscos mapeados, dependências claras)
+- [ ] Não há uso de dados sensíveis sem redaction e sem autorização
 
 **Quanto tempo tem**
 4 horas úteis a partir do momento em que o `tasks.md` é gerado (gate rápido — não pode virar fila)
@@ -62,6 +69,9 @@ Tech Lead (code review); PR exige no mínimo 1 approval
 - [ ] Testes unitários e de integração passam localmente e no CI
 - [ ] O Dev revisou criticamente o output do Copilot (não é "aceitar tudo que a IA sugeriu")
 - [ ] `docs/pull-requests/PR-NNNN.md` documenta objetivo, mudanças e este checklist preenchido
+- [ ] Há evidência mínima para merge (diff revisado, testes executados, riscos conhecidos)
+- [ ] O PR não avança sem aprovação humana válida e sem resposta aos comentários críticos
+- [ ] O rollback/correção está definido caso o merge gere regressão ou falha
 
 **Quanto tempo tem**
 1 dia útil (ou 4 horas se o PR estiver marcado como urgente/bloqueante)
@@ -85,6 +95,9 @@ QA valida a suficiência dos testes; Tech Lead aprova o deploy em seguida
 - [ ] Cenários de robustez de IA cobertos (prompt injection básico, pergunta ambígua, idioma diferente)
 - [ ] Nenhum teste depende de serviço real ou de ordem de execução (mocks/fixtures conforme Testing Standards)
 - [ ] QA registra sign-off explícito no board (Cowork) antes do TL aprovar o deploy
+- [ ] Há evidência mínima para aprovação (resultados dos testes, gaps conhecidos, risco residual documentado)
+- [ ] O deploy fica bloqueado se houver risco crítico não mitigado
+- [ ] O plano de rollback está disponível e alinhado com a contingência do fluxo
 
 **Quanto tempo tem**
 1 dia útil antes da janela de deploy planejada
@@ -104,4 +117,11 @@ Deploy fica bloqueado. QA lista os gaps de cobertura/cenário. Dev complementa a
 | 1. Spec → Plan | Product Specialist | 1 dia útil | Spec volta a "Rascunho"; TL não inicia o plan |
 | 2. Tasks → Implement | Tech Lead | 4 horas úteis | Tasks reprovadas voltam para ajuste; aprovadas seguem |
 | 3. Code → Merge | Tech Lead (1 approval) | 1 dia útil | PR bloqueado até correção e nova approval |
-| 4. Tests → Deploy | QA (testes) + Tech Lead (deploy) | 1 dia útil | Deploy bloqueado; só os testes com gap
+| 4. Tests → Deploy | QA (testes) + Tech Lead (deploy) | 1 dia útil | Deploy bloqueado; só os testes com gap |
+
+### Métricas e governança adicional
+- Tempo médio de revisão por gate
+- Taxa de retrabalho ou reprovação
+- Número de artefatos reprovados
+- Tempo de resposta do assistente
+- Custo por ciclo ou por entrega
