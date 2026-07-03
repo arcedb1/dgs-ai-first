@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluxo AI First — NovaTech Assistant</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#0f1117; --surface:#181c27; --surface2:#1e2335; --border:#2a2f45; --border-strong:#3d4d6e;
+  --text:#e8eaf0; --text-muted:#9aa0bc; --text-dim:#6b7394;
+  --accent:#6366f1; --promotor:#22c55e; --neutro:#f59e0b; --resistente:#ef4444;
+  --c-ps:#06b6d4; --c-tl:#6366f1; --c-dev:#14b8a6; --c-qa:#f97316; --c-dm:#ec4899;
+  --c-claude:#6366f1; --c-design:#8b5cf6; --c-cowork:#ec4899; --c-copilot:#14b8a6; --c-devops:#06b6d4; --c-github:#f97316;
+  --font:'Inter',system-ui,sans-serif;
+}
+body { background:var(--bg); color:var(--text); font-family:var(--font); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+header { padding:12px 24px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; flex-wrap:wrap; gap:10px; }
+.header-left { display:flex; align-items:center; gap:14px; }
+.project-badge { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); background:rgba(99,102,241,.12); padding:4px 10px; border-radius:4px; border:1px solid rgba(99,102,241,.25); }
+header h1 { font-size:15px; font-weight:700; color:var(--text); }
+header p { font-size:12px; color:var(--text-muted); margin-top:1px; }
+.header-meta { display:flex; gap:20px; align-items:center; }
+.meta-item { text-align:right; }
+.meta-label { font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+.meta-value { font-size:13px; font-weight:700; }
+
+.toolbar { padding:10px 24px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; flex-shrink:0; flex-wrap:wrap; }
+.legend-label { font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.1em; font-weight:700; }
+.legend-sep { width:1px; height:20px; background:var(--border); }
+.legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-muted); font-weight:500; }
+.dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+.filter-group { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.filter-btn { display:flex; align-items:center; gap:5px; padding:3px 10px; border-radius:5px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; font-family:var(--font); }
+.filter-btn:hover { background:var(--surface2); color:var(--text); }
+.filter-btn .fdot { width:7px; height:7px; border-radius:50%; }
+.filter-btn.active { color:var(--text); }
+
+.main { flex:1; display:flex; overflow:hidden; position:relative; }
+.flow-wrap { flex:1; overflow:auto; padding:36px 24px; }
+.flow { display:flex; align-items:flex-start; min-width:max-content; }
+
+.stage-card { width:212px; flex-shrink:0; background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:14px; cursor:pointer; transition:opacity .2s, border-color .15s; }
+.stage-card:hover { border-color:var(--border-strong); }
+.stage-card.dimmed { opacity:.25; }
+.stage-num { width:22px; height:22px; border-radius:50%; background:var(--surface2); color:var(--text-dim); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-bottom:8px; }
+.stage-name { font-size:14px; font-weight:700; color:var(--text); }
+.stage-file { font-size:10.5px; color:var(--text-dim); font-family:ui-monospace,monospace; margin-bottom:10px; }
+.mini-label { font-size:9px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.09em; font-weight:700; margin-bottom:5px; margin-top:8px; }
+.chip-row { display:flex; flex-wrap:wrap; gap:5px; }
+.chip { display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; color:var(--text-muted); background:var(--surface2); padding:3px 8px; border-radius:5px; }
+.chip .cdot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.gate-inline { margin-top:10px; display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:var(--neutro); background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.35); padding:4px 8px; border-radius:5px; cursor:pointer; width:fit-content; }
+.gate-inline:hover { background:rgba(245,158,11,.18); }
+
+.connector { width:70px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-top:56px; gap:8px; }
+.arrow { width:38px; height:2px; background:var(--border-strong); position:relative; }
+.arrow::after { content:''; position:absolute; right:-1px; top:-4px; border:5px solid transparent; border-left-color:var(--border-strong); }
+.gate-pill { display:flex; align-items:center; gap:4px; font-size:10px; font-weight:700; color:var(--neutro); background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.4); padding:3px 9px; border-radius:20px; cursor:pointer; white-space:nowrap; transition:background .15s; }
+.gate-pill:hover { background:rgba(245,158,11,.22); }
+.gate-pill .gdot { width:6px; height:6px; border-radius:50%; background:var(--neutro); }
+
+.hint { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--text-dim); background:var(--surface); border:1px solid var(--border); padding:6px 14px; border-radius:20px; pointer-events:none; transition:opacity .3s; white-space:nowrap; }
+
+.panel { width:0; background:var(--surface); border-left:1px solid var(--border); overflow:hidden; transition:width .3s cubic-bezier(.4,0,.2,1); flex-shrink:0; display:flex; flex-direction:column; }
+.panel.open { width:380px; }
+.panel-inner { width:380px; height:100%; overflow-y:auto; padding:22px 20px; display:flex; flex-direction:column; gap:16px; }
+.panel-inner::-webkit-scrollbar { width:4px; }
+.panel-inner::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.panel-header { display:flex; justify-content:space-between; align-items:flex-start; }
+.panel-name { font-size:17px; font-weight:700; line-height:1.25; color:var(--text); }
+.panel-role { font-size:12px; color:var(--text-muted); margin-top:3px; font-weight:500; }
+.close-btn { background:none; border:1px solid var(--border); color:var(--text-muted); width:28px; height:28px; border-radius:6px; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .15s; }
+.close-btn:hover { background:var(--surface2); color:var(--text); }
+.badges { display:flex; flex-wrap:wrap; gap:6px; }
+.badge { font-size:10px; font-weight:700; letter-spacing:.04em; padding:3px 9px; border-radius:4px; border:1px solid; display:flex; align-items:center; gap:5px; }
+.section-title { font-size:10px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; color:var(--text-dim); margin-bottom:9px; }
+.text-block { font-size:12.5px; color:var(--text-muted); line-height:1.6; font-weight:400; }
+.field-grid { display:grid; grid-template-columns:1fr; gap:10px; }
+.field { display:flex; flex-direction:column; gap:3px; }
+.field-label { font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+.field-value { font-size:12.5px; color:var(--text); font-weight:600; line-height:1.5; }
+.check-list { display:flex; flex-direction:column; gap:6px; }
+.check-item { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text); background:var(--surface2); padding:7px 10px; border-radius:6px; line-height:1.45; }
+.check-icon { color:var(--promotor); flex-shrink:0; font-size:12px; margin-top:1px; }
+.risk-item { display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--text-muted); line-height:1.55; }
+.risk-icon { color:var(--resistente); flex-shrink:0; }
+.divider { border:none; border-top:1px solid var(--border); }
+.gate-box { background:var(--surface2); border:1px solid rgba(245,158,11,.3); border-radius:8px; padding:10px 12px; }
+.gate-box-title { font-size:11px; font-weight:700; color:var(--neutro); margin-bottom:4px; }
+.gate-box-desc { font-size:11.5px; color:var(--text-muted); line-height:1.5; }
+.link-btn { font-size:11.5px; font-weight:600; color:var(--accent); background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.3); padding:6px 10px; border-radius:6px; cursor:pointer; text-align:left; }
+.link-btn:hover { background:rgba(99,102,241,.18); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="project-badge">DGS · DB1</div>
+    <div>
+      <h1>Fluxo AI First — NovaTech Assistant</h1>
+      <p>Delivery Manager: Arce · Ciclo Spec → Plan → Tasks → Implement → Review → Deploy</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-item"><div class="meta-label">Etapas</div><div class="meta-value">6</div></div>
+    <div class="meta-item"><div class="meta-label">Gates</div><div class="meta-value" style="color:var(--neutro)">4</div></div>
+    <div class="meta-item"><div class="meta-label">Ferramentas</div><div class="meta-value">6</div></div>
+    <div class="meta-item"><div class="meta-label">Papéis</div><div class="meta-value">5</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <span class="legend-label">Papel</span>
+  <div class="filter-group" id="role-filters"></div>
+
+  <div class="legend-sep"></div>
+
+  <span class="legend-label">Ferramenta</span>
+  <div class="filter-group" id="tool-filters"></div>
+
+  <div class="legend-sep"></div>
+
+  <div class="legend-item"><div class="dot" style="background:var(--neutro)"></div>Gate = checkpoint humano</div>
+</div>
+
+<div class="main">
+  <div class="flow-wrap">
+    <div class="flow" id="flow"></div>
+  </div>
+  <div class="hint" id="hint">Clique em uma etapa ou em um gate para ver os detalhes completos</div>
+  <div class="panel" id="panel">
+    <div class="panel-inner" id="panel-inner"></div>
+  </div>
+</div>
+
+<script>
+const ROLES = {
+  ps:  { name:'Product Specialist', color:'var(--c-ps)' },
+  tl:  { name:'Tech Lead', color:'var(--c-tl)' },
+  dev: { name:'Desenvolvedor', color:'var(--c-dev)' },
+  qa:  { name:'QA', color:'var(--c-qa)' },
+  dm:  { name:'Delivery Manager', color:'var(--c-dm)' },
+};
+const TOOLS = {
+  claude:  { name:'Claude (chat)', color:'var(--c-claude)' },
+  design:  { name:'Claude Design', color:'var(--c-design)' },
+  cowork:  { name:'Claude Cowork', color:'var(--c-cowork)' },
+  copilot: { name:'GitHub Copilot', color:'var(--c-copilot)' },
+  devops:  { name:'Azure DevOps', color:'var(--c-devops)' },
+  github:  { name:'GitHub', color:'var(--c-github)' },
+};
+
+const STAGES = [
+  { id:'spec', num:1, name:'Spec', file:'requirements.md',
+    tools:[{id:'claude', use:'Escreve o requirements.md'}, {id:'design', use:'Cria o mockup da interface'}],
+    roles:[{id:'ps', tag:'dono'}, {id:'tl', tag:'revisa viabilidade'}, {id:'qa', tag:'revisa testabilidade'}] },
+  { id:'plan', num:2, name:'Plan', file:'plan.md',
+    tools:[{id:'claude', use:'Escreve o plan.md a partir do requirements + ADRs'}],
+    roles:[{id:'tl', tag:'dono'}, {id:'ps', tag:'consultado'}, {id:'qa', tag:'consultado'}] },
+  { id:'tasks', num:3, name:'Tasks', file:'tasks.md',
+    tools:[{id:'claude', use:'Converte o plan em tasks atômicas'}, {id:'copilot', use:'Ajuda a quebrar em subtasks'}, {id:'devops', use:'Cria work items a partir das tasks'}],
+    roles:[{id:'dev', tag:'dono'}, {id:'tl', tag:'aprova'}] },
+  { id:'implement', num:4, name:'Implement', file:'src/**',
+    tools:[{id:'copilot', use:'Gera código dentro do editor'}, {id:'claude', use:'Debugging e decisões de arquitetura'}],
+    roles:[{id:'dev', tag:'dono'}, {id:'tl', tag:'acompanha'}] },
+  { id:'review', num:5, name:'Review', file:'PR-NNNN.md', embeddedGate:'g3',
+    tools:[{id:'github', use:'Pull request e code review'}, {id:'copilot', use:'Sugestões de ajuste'}, {id:'cowork', use:'Checklist de cobertura de testes'}],
+    roles:[{id:'tl', tag:'code review'}, {id:'qa', tag:'valida testes'}] },
+  { id:'deploy', num:6, name:'Deploy', file:'CI/CD',
+    tools:[{id:'github', use:'Aciona o pipeline de CI/CD'}, {id:'devops', use:'Board de status'}, {id:'cowork', use:'Fecha o ciclo da spec'}],
+    roles:[{id:'tl', tag:'aprova deploy'}, {id:'dev', tag:'executa merge'}, {id:'dm', tag:'acompanha'}] },
+];
+
+const GATES = {
+  g1: { label:'Gate 1', title:'Spec → Plan', after:'spec', before:'plan',
+    quemAprova:'Product Specialist (dono da spec)',
+    tempo:'1 dia útil, a contar do momento em que a spec entra em "Em Revisão"',
+    verifica:[
+      'Outcomes descrevem resultado para o usuário/negócio, não feature técnica',
+      'Scope boundaries explicitam o que este módulo cobre e o que fica fora',
+      'Toda prior decision referenciada existe como ADR em /docs/adr/',
+      'Cada verification criterion é testável pelo QA',
+      'Termos de domínio batem com a linguagem ubíqua definida',
+    ],
+    seReprovar:'Spec volta para "Rascunho" no board. PS registra os ajustes no requirements.md. Tech Lead não inicia o plan.md até nova aprovação.' },
+  g2: { label:'Gate 2', title:'Tasks → Implement', after:'tasks', before:'implement',
+    quemAprova:'Tech Lead',
+    tempo:'4 horas úteis a partir do momento em que o tasks.md é gerado',
+    verifica:[
+      'Cada task é atômica — implementável e testável de forma independente',
+      'Critérios de aceite são verificáveis, não "funcionar corretamente"',
+      'Dependências entre tasks estão mapeadas e na ordem certa',
+      'As tasks cobrem 100% do escopo do plan.md',
+      'Estimativas (P/M/G) são plausíveis',
+    ],
+    seReprovar:'TL comenta task a task no tasks.md. Tasks reprovadas voltam para ajuste; as já aprovadas seguem para implementação.' },
+  g3: { label:'Gate 3', title:'Code → Merge', embeddedIn:'review',
+    quemAprova:'Tech Lead (code review); PR exige no mínimo 1 approval',
+    tempo:'1 dia útil (ou 4h se o PR estiver marcado como urgente)',
+    verifica:[
+      'Código segue o AGENTS.md e as skills aplicáveis',
+      'Nenhum segredo/credencial hardcoded',
+      'Testes unitários e de integração passam no CI',
+      'Dev revisou criticamente o output do Copilot',
+      'PR-NNNN.md documenta objetivo, mudanças e checklist preenchido',
+    ],
+    seReprovar:'PR volta com comentários de review. Dev corrige e resubmete. Merge bloqueado até haver 1 approval válido.' },
+  g4: { label:'Gate 4', title:'Tests → Deploy', after:'review', before:'deploy',
+    quemAprova:'QA valida a suficiência dos testes; Tech Lead aprova o deploy em seguida',
+    tempo:'1 dia útil antes da janela de deploy planejada',
+    verifica:[
+      'Cobertura mínima de 80% de linhas atingida',
+      'Todo verification criterion tem ao menos 1 teste correspondente',
+      'Cenários de robustez de IA cobertos (prompt injection, ambiguidade, idioma)',
+      'Nenhum teste depende de serviço real ou de ordem de execução',
+      'QA registra sign-off explícito no board antes do TL aprovar o deploy',
+    ],
+    seReprovar:'Deploy bloqueado. QA lista os gaps de cobertura/cenário. Dev complementa só os testes faltantes. Novo ciclo de validação antes de reapresentar ao TL.' },
+};
+
+let activeFilter = null; // {type:'role'|'tool', id}
+
+function stageById(id){ return STAGES.find(s=>s.id===id); }
+
+function buildToolbar(){
+  const roleWrap = document.getElementById('role-filters');
+  Object.entries(ROLES).forEach(([id,r])=>{
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.id = 'rf-'+id;
+    btn.innerHTML = `<div class="fdot" style="background:${r.color}"></div>${r.name}`;
+    btn.onclick = ()=>toggleFilter('role', id);
+    roleWrap.appendChild(btn);
+  });
+  const toolWrap = document.getElementById('tool-filters');
+  Object.entries(TOOLS).forEach(([id,t])=>{
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.id = 'tf-'+id;
+    btn.innerHTML = `<div class="fdot" style="background:${t.color}"></div>${t.name}`;
+    btn.onclick = ()=>toggleFilter('tool', id);
+    toolWrap.appendChild(btn);
+  });
+}
+
+function toggleFilter(type, id){
+  if (activeFilter && activeFilter.type===type && activeFilter.id===id) activeFilter = null;
+  else activeFilter = { type, id };
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.filter-btn').forEach(b=>b.style.background='transparent');
+  document.querySelectorAll('.filter-btn').forEach(b=>b.style.borderColor='var(--border)');
+  if (activeFilter){
+    const prefix = activeFilter.type==='role' ? 'rf-' : 'tf-';
+    const btn = document.getElementById(prefix+activeFilter.id);
+    const color = activeFilter.type==='role' ? ROLES[activeFilter.id].color : TOOLS[activeFilter.id].color;
+    btn.classList.add('active');
+    btn.style.background = colorToBg(color);
+    btn.style.borderColor = colorToBorder(color);
+  }
+  renderFlow();
+}
+function colorToBg(v){ return `color-mix(in srgb, ${v} 16%, transparent)`; }
+function colorToBorder(v){ return `color-mix(in srgb, ${v} 55%, transparent)`; }
+
+function stageMatchesFilter(stage){
+  if (!activeFilter) return true;
+  if (activeFilter.type==='role') return stage.roles.some(r=>r.id===activeFilter.id);
+  return stage.tools.some(t=>t.id===activeFilter.id);
+}
+
+function renderFlow(){
+  const flow = document.getElementById('flow');
+  flow.innerHTML = '';
+  STAGES.forEach((stage, i)=>{
+    flow.appendChild(renderStageCard(stage));
+    if (i < STAGES.length-1){
+      const gateAfter = Object.entries(GATES).find(([,g])=>g.after===stage.id);
+      flow.appendChild(renderConnector(gateAfter ? gateAfter[1] : null, gateAfter ? gateAfter[0] : null));
+    }
+  });
+}
+
+function renderStageCard(stage){
+  const card = document.createElement('div');
+  card.className = 'stage-card' + (stageMatchesFilter(stage) ? '' : ' dimmed');
+  card.onclick = ()=>openStagePanel(stage);
+  const toolChips = stage.tools.map(t=>`<div class="chip"><div class="cdot" style="background:${TOOLS[t.id].color}"></div>${TOOLS[t.id].name}</div>`).join('');
+  const roleChips = stage.roles.map(r=>`<div class="chip"><div class="cdot" style="background:${ROLES[r.id].color}"></div>${ROLES[r.id].name} · ${r.tag}</div>`).join('');
+  const embeddedGate = stage.embeddedGate ? GATES[stage.embeddedGate] : null;
+  card.innerHTML = `
+    <div class="stage-num">${stage.num}</div>
+    <div class="stage-name">${stage.name}</div>
+    <div class="stage-file">${stage.file}</div>
+    <div class="mini-label">Ferramentas de IA</div>
+    <div class="chip-row">${toolChips}</div>
+    <div class="mini-label">Papéis atuantes</div>
+    <div class="chip-row">${roleChips}</div>
+    ${embeddedGate ? `<div class="gate-inline" data-gate="${stage.embeddedGate}"><div class="gdot" style="width:6px;height:6px;border-radius:50%;background:var(--neutro)"></div>${embeddedGate.label} embutido — ${embeddedGate.title}</div>` : ''}
+  `;
+  if (embeddedGate){
+    card.querySelector('.gate-inline').onclick = (e)=>{ e.stopPropagation(); openGatePanel(stage.embeddedGate); };
+  }
+  return card;
+}
+
+function renderConnector(gate, gateId){
+  const wrap = document.createElement('div');
+  wrap.className = 'connector';
+  wrap.innerHTML = `
+    <div class="arrow"></div>
+    ${gate ? `<div class="gate-pill" data-gate="${gateId}"><div class="gdot"></div>${gate.label}</div>` : ''}
+  `;
+  if (gate){
+    wrap.querySelector('.gate-pill').onclick = ()=>openGatePanel(gateId);
+  }
+  return wrap;
+}
+
+function openPanel(){
+  document.getElementById('hint').style.opacity = '0';
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('hint').style.opacity = '1';
+}
+
+function openStagePanel(stage){
+  const toolItems = stage.tools.map(t=>`
+    <div class="check-item"><span class="cdot" style="width:6px;height:6px;border-radius:50%;background:${TOOLS[t.id].color};flex-shrink:0;margin-top:5px;display:inline-block"></span><span><strong>${TOOLS[t.id].name}</strong> — ${t.use}</span></div>`).join('');
+  const roleItems = stage.roles.map(r=>`
+    <div class="check-item"><span class="cdot" style="width:6px;height:6px;border-radius:50%;background:${ROLES[r.id].color};flex-shrink:0;margin-top:5px;display:inline-block"></span><span><strong>${ROLES[r.id].name}</strong> — ${r.tag}</span></div>`).join('');
+
+  const gateAfterEntry = Object.entries(GATES).find(([,g])=>g.after===stage.id);
+  const embeddedGate = stage.embeddedGate ? [stage.embeddedGate, GATES[stage.embeddedGate]] : null;
+
+  let gateSection = '';
+  if (gateAfterEntry){
+    const [gid,g] = gateAfterEntry;
+    gateSection = `
+      <div>
+        <div class="section-title">Gate seguinte</div>
+        <div class="gate-box">
+          <div class="gate-box-title">${g.label} — ${g.title}</div>
+          <div class="gate-box-desc">Aprovador: ${g.quemAprova}</div>
+        </div>
+        <button class="link-btn" style="margin-top:8px;width:100%" onclick="openGatePanel('${gid}')">Ver checklist completo do ${g.label} →</button>
+      </div>`;
+  }
+  if (embeddedGate){
+    const [gid,g] = embeddedGate;
+    gateSection += `
+      <div>
+        <div class="section-title">Gate embutido nesta etapa</div>
+        <div class="gate-box">
+          <div class="gate-box-title">${g.label} — ${g.title}</div>
+          <div class="gate-box-desc">Aprovador: ${g.quemAprova}</div>
+        </div>
+        <button class="link-btn" style="margin-top:8px;width:100%" onclick="openGatePanel('${gid}')">Ver checklist completo do ${g.label} →</button>
+      </div>`;
+  }
+
+  document.getElementById('panel-inner').innerHTML = `
+    <div class="panel-header">
+      <div><div class="panel-name">${stage.num}. ${stage.name}</div><div class="panel-role">${stage.file}</div></div>
+      <button class="close-btn" onclick="closePanel()">✕</button>
+    </div>
+    <hr class="divider">
+    <div><div class="section-title">Ferramentas de IA</div><div class="check-list">${toolItems}</div></div>
+    <div><div class="section-title">Papéis atuantes</div><div class="check-list">${roleItems}</div></div>
+    ${gateSection ? '<hr class="divider">' + gateSection : ''}
+  `;
+  openPanel();
+}
+
+function openGatePanel(gateId){
+  const g = GATES[gateId];
+  const verificaItems = g.verifica.map(v=>`<div class="check-item"><span class="check-icon">✓</span><span>${v}</span></div>`).join('');
+  const subtitle = g.embeddedIn ? `Embutido na etapa "${stageById(g.embeddedIn).name}"` : `Entre "${stageById(g.after).name}" e "${stageById(g.before).name}"`;
+  document.getElementById('panel-inner').innerHTML = `
+    <div class="panel-header">
+      <div><div class="panel-name">${g.label}</div><div class="panel-role">${g.title}</div></div>
+      <button class="close-btn" onclick="closePanel()">✕</button>
+    </div>
+    <div class="badges"><span class="badge" style="color:var(--neutro);border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.1)">Validation gate</span></div>
+    <div class="text-block">${subtitle}</div>
+    <hr class="divider">
+    <div>
+      <div class="section-title">Quem aprova</div>
+      <div class="field-value">${g.quemAprova}</div>
+    </div>
+    <div>
+      <div class="section-title">Quanto tempo tem</div>
+      <div class="field-value">${g.tempo}</div>
+    </div>
+    <div>
+      <div class="section-title">O que verifica</div>
+      <div class="check-list">${verificaItems}</div>
+    </div>
+    <hr class="divider">
+    <div>
+      <div class="section-title">O que acontece se reprovar</div>
+      <div class="risk-item"><span class="risk-icon">▲</span><span>${g.seReprovar}</span></div>
+    </div>
+  `;
+  openPanel();
+}
+
+document.querySelector('.flow-wrap').addEventListener('click', (e)=>{ if(e.target.id==='flow'||e.target.classList.contains('flow-wrap')) closePanel(); });
+
+buildToolbar();
+renderFlow();
+</script>
+</body>
+</html>
