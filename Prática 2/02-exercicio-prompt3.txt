@@ -1,0 +1,131 @@
+EXERCÍCIO 3 — CHANGE MANAGEMENT PARA SPECS EM IMPLEMENTAÇÃO (NovaTech Assistant)
+Transcrição da conversa (prompts e resultado)
+
+================================================================================
+PROMPT 1 — Solicitação do processo de Change Management
+================================================================================
+
+Você é um Delivery Manager sênior da DB1. Defina o processo de CHANGE MANAGEMENT para specs do projeto NovaTech Assistant (Spec Driven Development) que JÁ estão em implementação.
+
+PROBLEMA A RESOLVER
+Uma spec (requirements / plan / tasks) já foi aprovada e o time começou a implementar. Surge a necessidade de mudança (novo requisito, decisão técnica revista, cenário de falha descoberto pelo QA, contradição documental etc.).
+Precisamos de um processo explícito para lidar com isso SEM quebrar o rastro do SDD e sem gerar retrabalho descontrolado.
+
+O PROCESSO DEVE RESPONDER COM CLAREZA
+1. QUEM PODE PROPOR uma mudança (qualquer papel? ou restrito?).
+2. QUEM PRECISA APROVAR, dependendo do tipo de mudança:
+   - mudança em requirements (afeta o "o quê") → aprovação de quem?
+   - mudança em plan (afeta o "como") → aprovação de quem?
+   - mudança em tasks (decomposição) → aprovação de quem?
+3. COMO CLASSIFICAR o impacto da mudança (ex.: menor / significativa / crítica) e o que cada nível dispara.
+4. EFEITO EM TASKS JÁ EM ANDAMENTO — o que acontece com o trabalho em progresso: pausar, refazer, seguir? Como evitar código órfão que não bate mais com a spec.
+5. PROPAGAÇÃO — se requirements muda, como plan e tasks são reavaliados (re-checkpoint humano obrigatório em cascata?).
+6. REGISTRO E RASTREABILIDADE — como a mudança é documentada (ex.: change log na spec, versão incrementada, referência no PR/commit) para que o histórico fique auditável.
+7. GATILHO DE ATUALIZAÇÃO DO BOARD — como o status da spec no board de tracking reflete a mudança (ex.: volta de "Em Implementação" para "Em Revisão").
+
+PRINCÍPIO OBRIGATÓRIO
+Reforce que specs são artefatos vivos: mudar uma spec é normal e esperado; o que precisa ser controlado é COMO se muda, não SE se muda.
+
+FORMATO DE SAÍDA
+Markdown pronto para CHANGE-MANAGEMENT.md. Use um fluxograma textual ou passo a passo numerado para o processo, uma tabela de "tipo de mudança x aprovador x impacto no board", e um exemplo concreto aplicado a um dos 5 módulos (ex.: o QA descobre um novo cenário de falha na API de feedback já em implementação).
+Direto e acionável.
+
+--------------------------------------------------------------------------------
+RESULTADO 1
+--------------------------------------------------------------------------------
+Criado o arquivo "Prática 2/03-CHANGE-MANAGEMENT.md", complementando o "02-GOVERNANCE.md" já existente no projeto. O documento cobriu:
+
+1. Quem pode propor (qualquer papel — Product Specialist, Tech Lead, Dev, QA, Delivery Manager) via Change Request (CR) registrado no board.
+2. Quem aprova por artefato afetado — regra do "dono natural" herdada do GOVERNANCE.md:
+   - requirements.md → Product Specialist
+   - plan.md → Tech Lead
+   - tasks.md → Tech Lead
+3. Tabela de classificação de impacto: Menor / Significativa / Crítica, com critério objetivo e gatilho de cada nível (ajuste direto vs. reabertura de gate vs. reabertura de gate + alinhamento do Delivery Manager).
+4. Efeito em tasks já em andamento: task não iniciada (bloqueada), em andamento e incompatível (pausada, WIP commitado em branch), em andamento e já compatível (segue, re-linkada), já mesclada em main (vira task de ajuste nova) — regra de ouro: nenhuma task codada contra spec não-aprovada.
+5. Fluxograma textual da propagação em cascata: requirements muda → Tech Lead reavalia plan → tasks referenciadas são marcadas e bloqueadas → Gate 1 e Gate 2 reexecutados → só então novo código.
+6. Registro e rastreabilidade: seção de changelog na própria spec (tabela Data/CR/Impacto/Descrição/Aprovado por), padrão de commit referenciando o CR, separação entre commit de conteúdo e commit de status.
+7. Tabela de gatilho de atualização do board (Em Implementação ↔ Em Revisão conforme o nível de impacto e reaprovação de gate).
+8. Exemplo concreto completo no módulo feedback-api: QA descobre que feedback duplicado no mesmo ticket não é tratado — passo a passo desde a abertura do CR-014 até o board retornar para "Em Implementação".
+
+================================================================================
+PROMPT 2 — /the-fool: análise crítica do documento (modo Socrático)
+================================================================================
+
+analise o @Prática 2/03-CHANGE-MANAGEMENT.md
+Aponte riscos.
+Traga sugestões de melhoria
+
+(Skill the-fool acionada. Etapas seguidas: steelman da tese do documento, confirmado pelo usuário; seleção de modo via pergunta estruturada — usuário escolheu "Questionar premissas (socrático)".)
+
+--------------------------------------------------------------------------------
+RESULTADO 2 — Inventário de Assunções e Perguntas Provocativas
+--------------------------------------------------------------------------------
+
+Assunções expostas (não comprovadas no documento):
+1. Classificação de impacto é aplicada de forma objetiva e consistente por quem tria.
+2. Tech Lead está sempre disponível para reavaliar plan.md rapidamente.
+3. O time tem sempre os 5 papéis distintos preenchidos.
+4. "Sem CR registrado, não há mudança" será respeitado mesmo sob pressão de prazo.
+5. Board e arquivo ficam sincronizados só porque "alguém percebe divergência".
+
+Perguntas por tema:
+- Tema 1 (classificação objetiva?): quem decide se uma mudança "altera" ou só "esclarece" um critério de aceite; risco de autoclassificação enviesada quando o Tech Lead propõe e tria a própria CR; fronteira "contrato publicado ou não" é verificável ou é afirmação de quem classifica.
+- Tema 2 (disponibilidade sempre assumida): por que o Change Management não herda a cláusula de backup de aprovador já existente em 02-GOVERNANCE.md §4.1; quem faz a revisão independente quando proponente/triador/aprovador se sobrepõem no mesmo papel.
+- Tema 3 (garantia de "nunca código órfão" é falseável?): não há mecanismo técnico (lint/hook/CI) que impeça o dev de continuar commitando contra spec em rascunho; task de ajuste pós-merge pode ficar indefinidamente no backlog geral sem SLA.
+
+Viés observado: narrativa limpa retroativa (narrative fallacy) no exemplo do §8 — cenário sem nenhum atrito, representando o caso mais favorável, não o caso médio.
+
+================================================================================
+PROMPT 3 — Pedido de visão mais realista
+================================================================================
+
+refaça a análise em uma visão mais realista
+
+--------------------------------------------------------------------------------
+RESULTADO 3 — Riscos realistas e melhorias concretas
+--------------------------------------------------------------------------------
+
+Riscos (assumindo cenário mais provável — time pequeno, papéis acumulados, sem CI bloqueante):
+1. Autoavaliação de impacto — Tech Lead classifica a própria mudança, tendência a subclassificar como "Menor" sob prazo.
+2. Ponto único de falha herdado do GOVERNANCE.md mas não coberto no Change Management (sem cláusula de backup de aprovador).
+3. Regra "nenhuma task codada contra spec não-aprovada" não tem mecanismo de verificação, só normativo.
+4. Task de ajuste pós-merge pode nunca ser priorizada, competindo no backlog geral mesmo sendo originada de CR Crítica.
+5. Exemplo do §8 é o caso feliz, não o caso médio — não testa o processo sob atrito real.
+
+Melhorias sugeridas:
+1. Segregação de papel na triagem quando proponente = triador (exige segundo revisor).
+2. Estender explicitamente a cláusula de backup de aprovador do GOVERNANCE.md §4.1 ao Change Management.
+3. Amarrar a regra de "nenhuma task órfã" a um mecanismo técnico verificável (campo obrigatório no PR + rejeição no Gate 3).
+4. SLA obrigatório para task de ajuste pós-merge quando a CR é Crítica (entra na sprint corrente, não no backlog geral).
+5. Auditoria periódica leve do Delivery Manager sobre classificações "Menor" acumuladas, para detectar subclassificação sistemática.
+
+Confiança da síntese: MEDIUM — processo estruturalmente sólido, mas depende de disciplina humana em pontos sem mecanismo de verificação. Assunção mais arriscada: que classificação de impacto e pausa de task serão seguidas sob pressão de prazo sem contrapeso.
+
+================================================================================
+PROMPT 4 — Implementar melhorias selecionadas
+================================================================================
+
+Implementar item 1, 3 e 5
+
+--------------------------------------------------------------------------------
+RESULTADO 4 — Alterações aplicadas em 03-CHANGE-MANAGEMENT.md
+--------------------------------------------------------------------------------
+
+Nova seção 3.1 — Segregação entre proponente e triador:
+- Quando quem propõe a CR também seria naturalmente quem a classifica (ex.: Tech Lead propondo e triando mudança técnica), a classificação exige confirmação de um segundo revisor (Dev Sênior para CR técnica; Tech Lead para CR de escopo, sem poder rebaixar sozinho).
+- Em caso de divergência entre proponente/triador e o segundo revisor, prevalece o nível mais alto, nunca o mais baixo por padrão, até o Delivery Manager decidir o desempate.
+
+Nova seção 3.2 — Auditoria periódica de classificações "Menor":
+- Revisão mensal do Delivery Manager sobre o padrão de CRs "Menor" por módulo — não reabertura individual, mas detecção de concentração desproporcional ou soma de mudanças pequenas que equivalem a uma mudança Significativa não reconhecida como tal.
+- Se detectado, o Delivery Manager abre uma CR de auditoria própria, classificada como Significativa, para forçar o gate que deveria ter sido disparado.
+
+Nova seção 4.1 — Mecanismo de verificação da regra de ouro (evita ser só "acordo de cavalheiros"):
+- Todo docs/pull-requests/PR-NNNN.md ganha campo obrigatório: "Status da spec-fonte no momento do commit", preenchido pelo autor a partir do cabeçalho de status do requirements.md/plan.md referenciado.
+- Tech Lead rejeita sumariamente, no Gate 3, qualquer PR cujo campo indique status diferente de "aprovado" — rejeição automática por processo, sem julgamento de mérito do código.
+- Não impede tecnicamente o commit (sem hook de CI no escopo deste projeto), mas move a verificação para um campo declarado, auditável e cruzável posteriormente via git log --follow.
+
+Itens 2 e 4 do resultado 3 (backup de aprovador espelhado do GOVERNANCE.md; SLA de task pós-merge crítica) ficaram fora desta rodada de implementação, por não terem sido solicitados.
+
+================================================================================
+FIM DA TRANSCRIÇÃO
+================================================================================
