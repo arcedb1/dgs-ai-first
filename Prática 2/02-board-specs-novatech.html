@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board de Tracking · Specs NovaTech Assistant (SDD)</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --panel2:#243449; --text:#e2e8f0; --muted:#94a3b8;
+    --border:#334155; --accent:#6366f1;
+    --rascunho:#94a3b8; --revisao:#f59e0b; --aprovada:#3b82f6; --impl:#8b5cf6; --validada:#22c55e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);padding:20px 24px 40px}
+  header h1{margin:0 0 4px;font-size:22px}
+  header p{margin:0;color:var(--muted);font-size:13px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 4px}
+  .toolbar input,.toolbar select{background:var(--panel);color:var(--text);border:1px solid var(--border);
+    border-radius:8px;padding:8px 10px;font-size:13px}
+  .toolbar input{min-width:220px}
+  .toolbar .spacer{flex:1}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0 16px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .board{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:14px;overflow-x:auto;padding-bottom:8px}
+  .col{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;min-width:220px}
+  .col h2{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;
+    display:flex;align-items:center;justify-content:space-between}
+  .col h2 .count{background:var(--panel2);color:var(--muted);border-radius:20px;padding:2px 9px;font-size:11px}
+  .col.top{border-top:3px solid var(--border)}
+  .card{background:var(--panel2);border:1px solid var(--border);border-left:4px solid var(--muted);
+    border-radius:10px;padding:11px 12px;margin-bottom:10px;cursor:grab;transition:.15s}
+  .card:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .card.dragging{opacity:.4}
+  .card .mod{font-weight:600;font-size:14px;margin-bottom:6px;line-height:1.25}
+  .card .row{font-size:11.5px;color:var(--muted);margin:3px 0;display:flex;gap:6px}
+  .card .row b{color:var(--text);font-weight:500}
+  .badge{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:6px;font-weight:600}
+  .art{background:#0b1220;border:1px solid var(--border);color:#cbd5e1}
+  .block{margin-top:7px;font-size:11px;padding:5px 7px;border-radius:6px;background:#3f1d1d;color:#fca5a5;border:1px solid #7f1d1d}
+  .block.ok{background:#14321f;color:#86efac;border-color:#166534}
+  .col.drop{outline:2px dashed var(--accent);outline-offset:-4px}
+  footer{margin-top:22px;color:var(--muted);font-size:11.5px;line-height:1.6}
+  @media(max-width:900px){.board{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Board de Tracking · Specs NovaTech Assistant</h1>
+  <p>Spec Driven Development · fluxo: Rascunho → Em Revisão → Aprovada → Em Implementação → Validada · atualizado em <span id="today"></span></p>
+</header>
+
+<div class="toolbar">
+  <input id="search" type="text" placeholder="Buscar módulo, responsável, observação…">
+  <select id="filterResp">
+    <option value="">Todos os responsáveis</option>
+    <option>Product Specialist</option>
+    <option>Tech Lead</option>
+    <option>Dev</option>
+    <option>QA</option>
+  </select>
+  <select id="filterArt">
+    <option value="">Todos os artefatos</option>
+    <option>requirements.md</option>
+    <option>plan.md</option>
+    <option>tasks.md</option>
+  </select>
+  <div class="spacer"></div>
+  <span style="font-size:12px;color:var(--muted)">Arraste os cards entre colunas para mudar o status</span>
+</div>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--rascunho)"></i>Rascunho</span>
+  <span><i class="dot" style="background:var(--revisao)"></i>Em Revisão</span>
+  <span><i class="dot" style="background:var(--aprovada)"></i>Aprovada</span>
+  <span><i class="dot" style="background:var(--impl)"></i>Em Implementação</span>
+  <span><i class="dot" style="background:var(--validada)"></i>Validada</span>
+</div>
+
+<div class="board" id="board"></div>
+
+<footer>
+  <b>Como usar:</b> arraste um card para outra coluna para atualizar o status (a “Última atualização” muda automaticamente).
+  Use a busca e os filtros para focar em um responsável ou artefato. As mudanças ficam salvas neste navegador.<br>
+  <b>Checkpoints humanos (SDD):</b> aprovação de requirements.md (Product Specialist) → aprovação de plan.md (Tech Lead) → revisão de tasks.md e code review (Tech Lead/Dev) → validação final (QA).
+</footer>
+
+<script>
+const STATUSES = [
+  {key:"Rascunho", var:"--rascunho"},
+  {key:"Em Revisão", var:"--revisao"},
+  {key:"Aprovada", var:"--aprovada"},
+  {key:"Em Implementação", var:"--impl"},
+  {key:"Validada", var:"--validada"},
+];
+const today = new Date().toISOString().slice(0,10);
+document.getElementById("today").textContent = today;
+
+const seed = [
+  {id:1, mod:"Pipeline de ingestão de documentos", art:"requirements.md", status:"Rascunho",
+   resp:"Product Specialist", checkpoint:"Aprovação do requirements.md pelo Product Specialist",
+   updated:today, obs:"Definir fontes de documentos e formatos suportados."},
+  {id:2, mod:"API de busca (query endpoint)", art:"requirements.md", status:"Rascunho",
+   resp:"Product Specialist", checkpoint:"Aprovação do requirements.md pelo Product Specialist",
+   updated:today, obs:"Alinhar contrato do endpoint e critérios de relevância."},
+  {id:3, mod:"API de feedback (atendente reporta resposta incorreta)", art:"requirements.md", status:"Rascunho",
+   resp:"Product Specialist", checkpoint:"Aprovação do requirements.md pelo Product Specialist",
+   updated:today, obs:"Mapear campos do feedback e integração com base de conhecimento."},
+  {id:4, mod:"Bot do Teams (interface conversacional)", art:"requirements.md", status:"Rascunho",
+   resp:"Product Specialist", checkpoint:"Aprovação do requirements.md pelo Product Specialist",
+   updated:today, obs:"Validar fluxo conversacional e autenticação corporativa."},
+  {id:5, mod:"Painel web (dashboard de métricas e histórico)", art:"requirements.md", status:"Rascunho",
+   resp:"Product Specialist", checkpoint:"Aprovação do requirements.md pelo Product Specialist",
+   updated:today, obs:"Definir métricas-chave e níveis de acesso."},
+];
+
+const KEY = "novatech-board-v1";
+let items = JSON.parse(localStorage.getItem(KEY) || "null") || seed;
+function save(){ localStorage.setItem(KEY, JSON.stringify(items)); }
+
+function statusColor(s){ return getComputedStyle(document.documentElement).getPropertyValue(STATUSES.find(x=>x.key===s).var); }
+
+function matches(it){
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const r = document.getElementById("filterResp").value;
+  const a = document.getElementById("filterArt").value;
+  if(r && it.resp!==r) return false;
+  if(a && it.art!==a) return false;
+  if(q && !(it.mod+it.resp+it.obs+it.checkpoint).toLowerCase().includes(q)) return false;
+  return true;
+}
+
+function render(){
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  STATUSES.forEach(st=>{
+    const col = document.createElement("div");
+    col.className="col top";
+    col.style.borderTopColor = statusColor(st.key);
+    col.dataset.status = st.key;
+    const list = items.filter(i=>i.status===st.key && matches(i));
+    col.innerHTML = `<h2><span style="color:${statusColor(st.key)}">${st.key}</span><span class="count">${list.length}</span></h2>`;
+    list.forEach(it=>col.appendChild(cardEl(it)));
+    // drag targets
+    col.addEventListener("dragover", e=>{e.preventDefault();col.classList.add("drop");});
+    col.addEventListener("dragleave", ()=>col.classList.remove("drop"));
+    col.addEventListener("drop", e=>{
+      e.preventDefault(); col.classList.remove("drop");
+      const id = +e.dataTransfer.getData("id");
+      const it = items.find(x=>x.id===id);
+      if(it && it.status!==st.key){ it.status=st.key; it.updated=today; save(); render(); }
+    });
+    board.appendChild(col);
+  });
+}
+
+function cardEl(it){
+  const c = document.createElement("div");
+  c.className="card"; c.draggable=true;
+  c.style.borderLeftColor = statusColor(it.status);
+  const blocked = /bloque|impedi|pendênc|pendenc/i.test(it.obs);
+  c.innerHTML = `
+    <div class="mod">${it.mod}</div>
+    <div class="row"><span class="badge art">${it.art}</span></div>
+    <div class="row">👤 <b>${it.resp}</b></div>
+    <div class="row">⏳ Checkpoint: <b>${it.checkpoint}</b></div>
+    <div class="row">🗓 Atualizado: <b>${it.updated}</b></div>
+    <div class="block ${blocked?'':'ok'}">${blocked?'⚠ ':'📝 '}${it.obs}</div>
+  `;
+  c.addEventListener("dragstart", e=>{e.dataTransfer.setData("id", it.id);c.classList.add("dragging");});
+  c.addEventListener("dragend", ()=>c.classList.remove("dragging"));
+  return c;
+}
+
+["search","filterResp","filterArt"].forEach(id=>
+  document.getElementById(id).addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
