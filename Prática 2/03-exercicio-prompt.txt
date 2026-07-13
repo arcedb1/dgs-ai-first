@@ -1,0 +1,91 @@
+=== EXPORTAÇÃO DA CONVERSA ===
+Data: 2026-07-12
+Contexto: Exercício 2.3 — Prática 2 — NovaTech Assistant
+
+--- PROMPT DO USUÁRIO ---
+
+Você é o Delivery Manager do projeto NovaTech Assistant, contribuindo com a seção que lhe cabe no AGENTS.md do repositório. Este arquivo é lido por AGENTES DE IA (Copilot, Claude Code) quando eles geram tasks, issues, documentação de gestão e artefatos de projeto. Portanto a seção precisa ser MACHINE-READABLE e PRESCRITIVA (dizer o que FAZER, não descrever conceitos).
+
+CONTEXTO DO PROJETO
+- NovaTech Assistant: assistente interno de RAG sobre a base documental da NovaTech (847 documentos válidos, 12 com contradições pendentes de Compliance).
+- Stack: TypeScript (backend/bot), React (painel web), Bicep (IaC). LLM: Azure OpenAI GPT-4o. Busca: Azure AI Search.
+- Arquitetura em 4 componentes: (1) pipeline de ingestão, (2) API do assistente (Azure Functions), (3) bot no Teams (Bot Framework), (4) painel web interno.
+- Metodologia: Spec Driven Development (requirements.md → plan.md → tasks.md).
+- Repositório `novatech-assistant` (Git local nesta fase).
+- Time: 1 Tech Lead (TL), 2 Devs (pleno e sênior), 1 QA, 1 Product Specialist (PS), 1 Delivery Manager (DM).
+
+ESTRUTURA DE DIRETÓRIOS RELEVANTE (Anexo C — use estes caminhos EXATOS)
+- Decisões arquiteturais: /docs/adr/           (ADRs numerados, ex.: ADR-0005)
+- Specs por módulo:        /specs/<modulo>/     (requirements.md, plan.md, tasks.md)
+- Documentação geral:      /docs/
+
+VALIDATION GATES (definidos no exercício 2.1 — a seção DEVE ser consistente com eles)
+- Gate 1 — Spec → Plan:    PS aprova requirements.md antes do TL gerar o plan.
+- Gate 2 — Tasks → Implement: TL aprova tasks.md antes do Dev iniciar.
+- Gate 3 — Code → Merge:   TL faz code review; PR precisa de 1 approval.
+- Gate 4 — Tests → Deploy: QA valida cobertura e cenários; TL aprova deploy.
+
+TAREFA
+Escreva a seção "## Project Management Rules (Delivery Manager)" do AGENTS.md, contendo obrigatoriamente:
+
+1. NOMENCLATURA DE TASKS E ISSUES
+   - Formato prescritivo do título (ex.: prefixo por módulo, verbo no imperativo, referência à spec de origem).
+   - Labels obrigatórias e seus valores permitidos (ex.: módulo, tipo, gate atual, prioridade).
+   - Como uma task referencia a spec e o ADR que a originaram (rastreabilidade).
+
+2. DOCUMENTAÇÃO DE DECISÕES
+   - Regra de que toda decisão técnica ou de escopo vira um ADR em /docs/adr/.
+   - Formato do nome do arquivo e numeração sequencial.
+   - Quando um agente DEVE criar/atualizar um ADR versus quando NÃO deve.
+
+3. VALIDATION GATES EM FORMATO CONSUMÍVEL POR AGENTE
+   - Represente os 4 gates de forma parseável (ex.: bloco YAML ou tabela) com,
+     por gate: id, transição, quem aprova, pré-condição e artefato bloqueado.
+   - Instrução explícita: o agente NÃO pode avançar de fase sem o gate cumprido.
+
+4. RESTRIÇÕES DE COMUNICAÇÃO QUE AFETAM GERAÇÃO DE ARTEFATOS
+   - Idioma: documentos de status/gestão em PORTUGUÊS; código, nomes de
+     símbolos e comments em INGLÊS; mensagens de commit e PRs em [defina].
+   - Qualquer outra convenção de linguagem/tom relevante para artefatos gerados.
+
+REQUISITOS DE QUALIDADE (critérios de avaliação)
+- MACHINE-READABLE: um agente de IA consegue parsear e seguir. Use listas, tabelas e/ou blocos YAML — evite prosa longa e ambígua.
+- PRESCRITIVA: cada regra diz o que FAZER ("Use...", "Crie...", "Nunca..."), não o que algo É.
+- CONSISTENTE com os 4 validation gates acima.
+- ESPECÍFICA do NovaTech: cite módulos reais, caminhos reais e papéis reais. Nada genérico que caberia em qualquer projeto.
+
+FORMATO DE SAÍDA
+Apenas a seção em Markdown, iniciando por
+"## Project Management Rules (Delivery Manager)", pronta para colar no AGENTS.md.
+Inclua ao menos um bloco YAML (para os gates) e ao menos uma tabela (para labels ou nomenclatura). Não escreva as outras seções do AGENTS.md.
+
+--- AÇÕES REALIZADAS PELO ASSISTENTE ---
+
+1. Leitura do arquivo AGENTS.md existente em:
+   "Prática 2/novatech-assistant/AGENTS.md"
+   (arquivo continha apenas placeholders TODO para cada seção, incluindo
+   "## Project Management Rules (Delivery Manager)")
+
+2. Edição do arquivo, substituindo o placeholder pela seção completa
+   "## Project Management Rules (Delivery Manager)", contendo:
+   - Nomenclatura prescritiva de título de task: "[<módulo>] <Verbo imperativo> <objeto> (spec: <spec-slug>)"
+   - Tabela de labels obrigatórias (modulo, tipo, gate-atual, prioridade, compliance-pendente)
+   - Bloco de rastreabilidade obrigatório referenciando spec/plan/ADR de origem
+   - Regras de criação de ADR em /docs/adr/ (nome de arquivo, numeração sequencial,
+     quando criar vs. quando não criar, regra de supersessão)
+   - Bloco YAML com os 4 validation gates (id, transição, aprovador, pré-condição,
+     artefato bloqueado, label_gate) e instrução explícita de bloqueio de avanço de fase
+   - Tabela de restrições de comunicação por tipo de artefato (português para gestão/specs/ADR,
+     inglês para código/comentários/commits, Conventional Commits para mensagens de commit)
+
+--- RESULTADO ---
+
+Seção adicionada com sucesso ao arquivo:
+"Prática 2/novatech-assistant/AGENTS.md"
+
+Resumo enviado ao usuário:
+"Seção 'Project Management Rules (Delivery Manager)' adicionada ao AGENTS.md, cobrindo
+nomenclatura de tasks/labels com rastreabilidade a specs/ADRs, regras de ADR em /docs/adr/,
+os 4 gates em YAML parseável, e a matriz de idioma por tipo de artefato."
+
+=== FIM DA EXPORTAÇÃO ===
