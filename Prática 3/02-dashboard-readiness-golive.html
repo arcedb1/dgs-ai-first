@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Readiness — Go-Live NovaTech AI Assistant</title>
+<style>
+  :root{
+    --verde:#1a9c56;--verde-bg:#e4f6ec;
+    --amarelo:#d69b00;--amarelo-bg:#fdf3d7;
+    --vermelho:#d13b3b;--vermelho-bg:#fbe4e4;
+    --ink:#1c2430;--muted:#64748b;--line:#e2e8f0;--card:#ffffff;--bg:#f1f5f9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.45;padding:28px 20px 60px}
+  .wrap{max-width:1220px;margin:0 auto}
+  header.top{margin-bottom:20px}
+  h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+
+  /* GO-LIVE BANNER */
+  .golive{border-radius:14px;padding:22px 26px;margin:20px 0;display:flex;
+    align-items:center;justify-content:space-between;gap:20px;color:#fff;
+    box-shadow:0 6px 20px rgba(0,0,0,.08)}
+  .golive.no{background:linear-gradient(135deg,#d13b3b,#a82828)}
+  .golive.yes{background:linear-gradient(135deg,#1a9c56,#137a42)}
+  .golive .lbl{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;opacity:.9}
+  .golive .ans{font-size:32px;font-weight:800;line-height:1.1;margin-top:2px}
+  .golive .why{font-size:13px;opacity:.95;max-width:520px;text-align:right}
+
+  /* COUNTERS */
+  .counters{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:22px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .kpi .n{font-size:26px;font-weight:800}
+  .kpi .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .kpi.v .n{color:var(--verde)} .kpi.a .n{color:var(--amarelo)} .kpi.r .n{color:var(--vermelho)}
+  .kpi.block .n{color:var(--vermelho)}
+  @media(max-width:900px){.counters{grid-template-columns:repeat(3,1fr)}.golive{flex-direction:column;align-items:flex-start}.golive .why{text-align:left}}
+
+  /* CONTROLS */
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .controls .f{font-size:13px;padding:7px 13px;border:1px solid var(--line);background:#fff;
+    border-radius:20px;cursor:pointer;color:var(--muted);transition:.15s}
+  .controls .f.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .controls .spacer{flex:1}
+  .controls .hint{font-size:12px;color:var(--muted)}
+
+  /* LAYER GROUPS */
+  .layer{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden}
+  .layer h2{font-size:15px;padding:13px 18px;background:#f8fafc;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;cursor:pointer}
+  .layer h2 .num{background:var(--ink);color:#fff;width:22px;height:22px;border-radius:6px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .layer h2 .pills{margin-left:auto;display:flex;gap:6px;font-size:11px;font-weight:600}
+  .pill{padding:2px 8px;border-radius:10px}
+  .pill.v{background:var(--verde-bg);color:var(--verde)}
+  .pill.a{background:var(--amarelo-bg);color:var(--amarelo)}
+  .pill.r{background:var(--vermelho-bg);color:var(--vermelho)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);
+    padding:9px 12px;border-bottom:1px solid var(--line);background:#fcfcfd}
+  td{padding:11px 12px;border-bottom:1px solid #f0f3f7;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.row-r{border-left:4px solid var(--vermelho)}
+  tr.row-a{border-left:4px solid var(--amarelo)}
+  tr.row-v{border-left:4px solid var(--verde)}
+  .crit{font-weight:600;max-width:360px}
+  .obs{color:var(--muted);max-width:300px;font-size:12px}
+
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+  .badge.v{background:var(--verde-bg);color:var(--verde)}
+  .badge.a{background:var(--amarelo-bg);color:var(--amarelo)}
+  .badge.r{background:var(--vermelho-bg);color:var(--vermelho)}
+  .blk{font-weight:700;font-size:12px}
+  .blk.sim{color:var(--vermelho)} .blk.nao{color:var(--muted)}
+  .ph{color:#b45309;background:#fff7ed;padding:1px 6px;border-radius:5px;font-size:12px;border:1px dashed #fdba74}
+  .dt{white-space:nowrap;font-variant-numeric:tabular-nums}
+  footer{color:var(--muted);font-size:12px;margin-top:26px;text-align:center}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  .disclaimer{background:#fff7ed;border:1px solid #fdba74;border-left:4px solid #b45309;
+    border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13px;color:#7c2d12}
+  .disclaimer strong{color:#7c2d12}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Dashboard de Readiness — Go-Live do Assistente de IA da NovaTech</h1>
+    <div class="sub">Harness de Governança · 5 camadas · Demo para a diretoria em <strong>26/07/2026</strong> (2 semanas a partir de 12/07/2026) · Referência: 12/07/2026</div>
+  </header>
+
+  <div class="disclaimer">
+    ⚠️ <strong>Aviso:</strong> os 18 critérios classificados como <strong>Bloqueante = Sim</strong> neste dashboard ainda estão com o campo <span class="ph">Responsável</span> em placeholder (<code>[DEFINIR]</code>). A nomeação formal de um responsável real para cada um desses 18 itens — com confirmação de disponibilidade antes das respectivas datas-alvo — é <strong>pré-requisito para o início do go-live</strong>, pois sem responsável definido não há como garantir a execução, o prazo, nem a prestação de contas de cada bloqueante. Este passo deve ser concluído pelo DM antes de qualquer item ser tratado como "em andamento".
+  </div>
+
+  <div id="golive" class="golive no">
+    <div>
+      <div class="lbl">Go-live autorizado?</div>
+      <div class="ans" id="goliveAns">NÃO</div>
+    </div>
+    <div class="why" id="goliveWhy"></div>
+  </div>
+
+  <div class="counters" id="counters"></div>
+
+  <div class="controls">
+    <span class="f on" data-f="all">Todos</span>
+    <span class="f" data-f="v">🟢 Verde</span>
+    <span class="f" data-f="a">🟡 Amarelo</span>
+    <span class="f" data-f="r">🔴 Vermelho</span>
+    <span class="f" data-f="block">⛔ Só bloqueantes</span>
+    <span class="spacer"></span>
+    <span class="hint">Clique no título da camada para recolher · <span class="ph">amarelo</span> = campo a decidir</span>
+  </div>
+
+  <div id="layers"></div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:var(--verde)"></i> Verde = pronto/atende</span>
+    <span><i class="dot" style="background:var(--amarelo)"></i> Amarelo = em andamento / risco / a decidir</span>
+    <span><i class="dot" style="background:var(--vermelho)"></i> Vermelho = não atende / não iniciado</span>
+    <span>⛔ Bloqueante = impede o go-live enquanto fora do verde</span>
+  </div>
+
+  <footer>Dashboard gerado pela função de Delivery Management · status realistas dados os problemas atuais (12% de respostas incorretas, ausência de structured output, violação do AGENTS.md, cobertura de testes ~75%). Responsáveis e datas marcados como <span class="ph">placeholder</span> devem ser confirmados pelo DM.</footer>
+</div>
+
+<script>
+const DATA = [
+ // ===== 1. TOOL ORCHESTRATION =====
+ {c:"Endpoint de query com timeout e retry para Azure AI Search", layer:1, status:"a", block:true, resp:"[DEFINIR — Tech Lead]", date:"18/07/2026", obs:"Endpoint existe, mas timeout/retry não estão configurados de forma explícita. Ajuste rápido em código."},
+ {c:"Fallback explícito quando o retrieval não retorna chunks relevantes", layer:1, status:"r", block:true, resp:"[DEFINIR — Tech Lead]", date:"21/07/2026", obs:"Causa raiz de parte da alucinação — hoje o modelo responde mesmo sem chunk. Não implementado."},
+ {c:"Orquestração bot Teams ↔ endpoint com circuit breaker", layer:1, status:"r", block:true, resp:"[DEFINIR — Dev Backend]", date:"22/07/2026", obs:"Sem circuit breaker: queda do endpoint gera erro cru para os 5 pilotos. Não implementado."},
+ {c:"Reprocessamento automático de documentos desatualizados (re-indexação agendada)", layer:1, status:"a", block:false, resp:"[DEFINIR — Eng. de Dados]", date:"Mitigar até 24/07/2026", obs:"Desejável. Mitigar com reindexação pontual manual antes da demo; automação fica para depois."},
+ {c:"Orquestração multi-agente (agente validador de resposta)", layer:1, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. Risco crítico já coberto pelo HITL (camada 4). Adiar."},
+
+ // ===== 2. VERIFICATION LOOPS =====
+ {c:"Structured output obrigatório (JSON validado por schema: answer, source_document, confidence_score)", layer:2, status:"r", block:true, resp:"[DEFINIR — Tech Lead]", date:"19/07/2026", obs:"Bloqueio mais urgente: sem ele o HITL (depende de confidence_score) nem pode existir. Respostas hoje em texto livre."},
+ {c:"Verificação de que o source_document citado existe de fato no índice", layer:2, status:"r", block:true, resp:"[DEFINIR — Dev Backend]", date:"22/07/2026", obs:"Sem isso, o modelo pode 'citar' documento inexistente — pior que não citar. Depende do structured output."},
+ {c:"Teste de regressão automatizado sobre os 12% de casos de erro conhecidos", layer:2, status:"r", block:true, resp:"[DEFINIR — QA]", date:"23/07/2026", obs:"Rodar antes de cada deploy. Ir ao ar sem monitorar falhas já conhecidas = repetir o erro."},
+ {c:"Elevar cobertura de testes de integração de 75% para 90%+", layer:2, status:"a", block:false, resp:"[DEFINIR — QA]", date:"Pós-demo", obs:"Desejável. Cobertura atual ~75%. Perseguir 15 p.p. em 2 semanas é troca ruim; focar nos casos de falha conhecidos."},
+ {c:"Verificação semântica automática (LLM-as-judge) de coerência resposta/fonte", layer:2, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. HITL cobre o risco imediato de baixa confiança."},
+
+ // ===== 3. CONTEXT & MEMORY =====
+ {c:"Cada resposta referencia versão/data de indexação do documento fonte", layer:3, status:"r", block:true, resp:"[DEFINIR — Eng. de Dados]", date:"22/07/2026", obs:"Sem rastreabilidade não dá para diagnosticar 'documento desatualizado' nem confiar na citação. Não implementado."},
+ {c:"Isolamento de memória por sessão (sem vazar contexto entre atendentes)", layer:3, status:"a", block:true, resp:"[DEFINIR — Dev Backend]", date:"21/07/2026", obs:"Precisa de validação explícita. Risco de dado sensível, agravado pelo incidente do módulo de feedback."},
+ {c:"Memória de conversa persistente entre turnos na mesma sessão", layer:3, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. Staging funciona por pergunta única; multi-turno é melhoria de UX."},
+ {c:"Cache de embeddings/chunks para reduzir latência", layer:3, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. Otimização de performance, sem impacto em confiabilidade."},
+
+ // ===== 4. GUARDRAILS / HITL =====
+ {c:"HITL obrigatório (retém resposta com confidence < 0.6 OU tema sensível p/ revisão humana)", layer:4, status:"r", block:true, resp:"[DEFINIR — Product Specialist]", date:"24/07/2026", obs:"Mecanismo central para conter os 12% de erro. Não existe ponto de revisão humana hoje. Depende do structured output."},
+ {c:"Correção do módulo de feedback que violou o AGENTS.md (add Zod, remover log de dado sensível)", layer:4, status:"r", block:true, resp:"[DEFINIR — Dev responsável pelo módulo]", date:"17/07/2026", obs:"Violação já identificada com exposição de dado sensível em staging. Não pode ir ao ar como está. Prioridade imediata."},
+ {c:"Revisão humana obrigatória de todo código gerado por IA antes do merge (aderência ao AGENTS.md)", layer:4, status:"a", block:true, resp:"[DEFINIR — Tech Lead]", date:"16/07/2026", obs:"Processo, não código — pode ser instituído rápido. Falta formalizar no fluxo de PR/branch protection."},
+ {c:"Guardrails de produto (DEVE/NÃO DEVE) implementados como validação automática", layer:4, status:"r", block:true, resp:"[DEFINIR — Product Specialist + Dev]", date:"23/07/2026", obs:"Guardrail só em markdown não impede nada em runtime. Precisa virar checagem de código/prompt."},
+ {c:"HITL — Responsável primário: escala fixa de 2 revisores nomeados por turno", layer:4, status:"a", block:true, resp:"[DEFINIR — nomear 2 revisores]", date:"18/07/2026", obs:"Capacidade operacional do HITL. Nomear pessoas explícitas, não 'o time'. Depende de decisão de alocação."},
+ {c:"HITL — SLA de revisão de 5 min com escalonamento automático + bloqueio em 10 min", layer:4, status:"r", block:true, resp:"[DEFINIR — Product Specialist]", date:"24/07/2026", obs:"Fila de revisão trava silenciosamente sem SLA. Escalonamento p/ backup e mensagem padrão ao atendente. Não implementado."},
+ {c:"HITL — Confirmar disponibilidade real dos revisores na janela da demo", layer:4, status:"a", block:true, resp:"[DEFINIR — DM]", date:"25/07/2026", obs:"Confirmar que revisores nomeados não estão de férias/alocados. Recomenda-se 1 revisor dedicado de plantão na demo."},
+ {c:"Rate limiting / limite de perguntas por atendente por minuto", layer:4, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. Não é bloqueio de confiabilidade para demo com 5 pilotos."},
+ {c:"Guardrail de conteúdo tóxico/PII na pergunta de entrada", layer:4, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. Redundante no curto prazo com público controlado; vira bloqueante ao abrir para mais usuários."},
+
+ // ===== 5. OBSERVABILITY =====
+ {c:"Log de toda interação (pergunta, resposta, confidence_score, se passou por HITL, decisão humana)", layer:5, status:"r", block:true, resp:"[DEFINIR — Dev Backend]", date:"22/07/2026", obs:"Sem log não há como auditar a demo, medir taxa de erro real, nem investigar incidentes. Não implementado."},
+ {c:"Dashboard/alerta quando taxa de retenção HITL ou baixa confiança ultrapassa limiar (>20%)", layer:5, status:"r", block:true, resp:"[DEFINIR — DevOps]", date:"24/07/2026", obs:"Sinal de degradação e gatilho do plano de rollback. Depende do log de interações. Não implementado."},
+ {c:"Máscara/redação de dados sensíveis do atendente nos logs", layer:5, status:"r", block:true, resp:"[DEFINIR — Dev Backend]", date:"22/07/2026", obs:"Consequência direta do incidente. Logar dado sensível de novo = repetir a falha. Implementar junto ao log."},
+ {c:"Dashboard executivo de métricas de negócio para a diretoria", layer:5, status:"a", block:false, resp:"[DEFINIR — DM]", date:"25/07/2026", obs:"Desejável. É apresentação, não controle de risco. Pode ser montado na véspera da demo."},
+ {c:"Tracing distribuído completo (latência por etapa do pipeline)", layer:5, status:"a", block:false, resp:"— (fora de escopo)", date:"Pós-demo", obs:"Desejável. Otimização operacional futura, não crítico para demo controlada."},
+];
+
+const LAYERS = {
+ 1:"Tool Orchestration", 2:"Verification Loops", 3:"Context & Memory",
+ 4:"Guardrails (inclui Human-in-the-Loop)", 5:"Observability"
+};
+const STLABEL = {v:"Verde", a:"Amarelo", r:"Vermelho"};
+
+let filter = "all";
+
+function passes(d){
+  if(filter==="all") return true;
+  if(filter==="block") return d.block;
+  return d.status===filter;
+}
+
+function render(){
+  // counters
+  const total = DATA.length;
+  const nv = DATA.filter(d=>d.status==="v").length;
+  const na = DATA.filter(d=>d.status==="a").length;
+  const nr = DATA.filter(d=>d.status==="r").length;
+  const blockPend = DATA.filter(d=>d.block && d.status!=="v").length;
+  const blockTotal = DATA.filter(d=>d.block).length;
+
+  document.getElementById("counters").innerHTML = `
+    <div class="kpi"><div class="n">${total}</div><div class="k">Critérios no total</div></div>
+    <div class="kpi v"><div class="n">${nv}</div><div class="k">🟢 Verdes</div></div>
+    <div class="kpi a"><div class="n">${na}</div><div class="k">🟡 Amarelos</div></div>
+    <div class="kpi r"><div class="n">${nr}</div><div class="k">🔴 Vermelhos</div></div>
+    <div class="kpi block"><div class="n">${blockPend}</div><div class="k">⛔ Bloqueantes pendentes</div></div>
+    <div class="kpi"><div class="n">${blockTotal}</div><div class="k">Bloqueantes no total</div></div>`;
+
+  // go-live
+  const authorized = blockPend===0;
+  const g = document.getElementById("golive");
+  g.className = "golive " + (authorized?"yes":"no");
+  document.getElementById("goliveAns").textContent = authorized ? "SIM" : "NÃO";
+  document.getElementById("goliveWhy").innerHTML = authorized
+    ? "Todos os critérios bloqueantes estão no verde."
+    : `<strong>${blockPend}</strong> de <strong>${blockTotal}</strong> critérios bloqueantes ainda estão fora do verde. O go-live permanece bloqueado até que todos fiquem verdes.`;
+
+  // layers
+  const host = document.getElementById("layers");
+  host.innerHTML = "";
+  for(const L of [1,2,3,4,5]){
+    const rows = DATA.filter(d=>d.layer===L);
+    const shown = rows.filter(passes);
+    const lv = rows.filter(d=>d.status==="v").length;
+    const la = rows.filter(d=>d.status==="a").length;
+    const lr = rows.filter(d=>d.status==="r").length;
+    const sec = document.createElement("div");
+    sec.className="layer";
+    sec.innerHTML = `
+      <h2 onclick="this.parentNode.querySelector('.body').classList.toggle('hide')">
+        <span class="num">${L}</span> ${LAYERS[L]}
+        <span class="pills">
+          <span class="pill v">${lv}🟢</span><span class="pill a">${la}🟡</span><span class="pill r">${lr}🔴</span>
+        </span>
+      </h2>
+      <div class="body">
+        ${shown.length===0 ? `<div style="padding:14px 18px;color:var(--muted);font-size:13px">Nenhum critério neste filtro.</div>` :
+        `<table>
+          <thead><tr>
+            <th>Critério</th><th>Status</th><th>Bloqueante?</th><th>Responsável</th><th>Data-alvo</th><th>Observação</th>
+          </tr></thead>
+          <tbody>
+            ${shown.map(d=>`
+              <tr class="row-${d.status}">
+                <td class="crit">${d.c}</td>
+                <td><span class="badge ${d.status}">${STLABEL[d.status]}</span></td>
+                <td><span class="blk ${d.block?'sim':'nao'}">${d.block?'⛔ Sim':'Não'}</span></td>
+                <td>${fmtResp(d.resp)}</td>
+                <td class="dt">${fmtDate(d.date)}</td>
+                <td class="obs">${d.obs}</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>`}
+      </div>`;
+    host.appendChild(sec);
+  }
+}
+function fmtResp(r){ return r.startsWith("[DEFINIR") ? `<span class="ph">${r}</span>` : r; }
+function fmtDate(d){ return (d.includes("Pós")||d.includes("Mitigar")) ? `<span class="ph">${d}</span>` : d; }
+
+document.querySelectorAll(".controls .f").forEach(el=>{
+  el.addEventListener("click",()=>{
+    document.querySelectorAll(".controls .f").forEach(x=>x.classList.remove("on"));
+    el.classList.add("on"); filter = el.dataset.f; render();
+  });
+});
+const style = document.createElement("style");
+style.textContent = ".body.hide{display:none}";
+document.head.appendChild(style);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Semanal — Assistente de IA NovaTech</title>
+<style>
+  :root{
+    --verde:#1a8a4a; --verde-bg:#e6f5ec;
+    --amarelo:#c98a00; --amarelo-bg:#fdf4e0;
+    --vermelho:#c0392b; --vermelho-bg:#fbeae8;
+    --tinta:#1a2230; --cinza:#5b6472; --linha:#e4e7ec; --fundo:#f4f6f9;
+    --azul:#2563eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--fundo);color:var(--tinta);line-height:1.35;padding:20px}
+  .pagina{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--linha);border-radius:12px;padding:26px 30px;box-shadow:0 2px 14px rgba(20,30,50,.06)}
+
+  /* Cabeçalho */
+  .cab{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--tinta);padding-bottom:12px;margin-bottom:16px}
+  .cab h1{font-size:19px;letter-spacing:-.2px}
+  .cab .sub{font-size:12.5px;color:var(--cinza);margin-top:3px}
+  .cab .meta{text-align:right;font-size:12px;color:var(--cinza);white-space:nowrap}
+  .cab .meta b{color:var(--tinta);font-size:13px}
+
+  /* Veredito */
+  .veredito{display:flex;align-items:center;gap:14px;border-radius:10px;padding:14px 18px;margin-bottom:18px;border:1px solid}
+  .veredito.verde{background:var(--verde-bg);border-color:#bfe4cd}
+  .veredito.amarelo{background:var(--amarelo-bg);border-color:#f0dcac}
+  .veredito.vermelho{background:var(--vermelho-bg);border-color:#f0c4bd}
+  .farol{width:20px;height:20px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 4px rgba(0,0,0,.05)}
+  .verde .farol{background:var(--verde)} .amarelo .farol{background:var(--amarelo)} .vermelho .farol{background:var(--vermelho)}
+  .veredito .txt{flex:1}
+  .veredito .txt .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--cinza)}
+  .veredito .txt .frase{font-size:17px;font-weight:700;margin-top:1px}
+  .verde .frase{color:var(--verde)} .amarelo .frase{color:var(--amarelo)} .vermelho .frase{color:var(--vermelho)}
+  .veredito .resumo{font-size:12px;color:var(--cinza);margin-top:3px;font-weight:400}
+
+  h2.sec{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--cinza);margin:18px 0 9px;font-weight:700}
+
+  /* KPIs */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .kpi{border:1px solid var(--linha);border-radius:9px;padding:11px 12px;background:#fff}
+  .kpi .dim{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:#9aa2af;font-weight:700}
+  .kpi .nome{font-size:12px;color:var(--cinza);margin:2px 0 6px;min-height:30px}
+  .kpi .linha-val{display:flex;align-items:baseline;gap:7px}
+  .kpi .val{font-size:24px;font-weight:800;letter-spacing:-.5px}
+  .kpi .seta{font-size:16px;font-weight:800}
+  .kpi .ant{font-size:11px;color:#9aa2af;margin-top:3px}
+  .bom{color:var(--verde)} .ruim{color:var(--vermelho)} .neutro{color:var(--cinza)}
+
+  /* Tendências */
+  .trends{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .trend{border:1px solid var(--linha);border-radius:9px;padding:10px 12px}
+  .trend .t-nome{font-size:11.5px;font-weight:700;color:var(--tinta)}
+  .trend .t-sub{font-size:10px;color:#9aa2af;margin-bottom:4px}
+  .trend svg{display:block;width:100%;height:46px}
+
+  /* Duas colunas: destaques e ações */
+  .duas{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
+  ul.bullets{list-style:none}
+  ul.bullets li{font-size:12px;padding:4px 0 4px 18px;position:relative;color:#2c3644}
+  ul.bullets li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:2px}
+  li.pos::before{background:var(--verde)} li.neg::before{background:var(--vermelho)} li.info::before{background:var(--amarelo)}
+
+  table.acoes{width:100%;border-collapse:collapse;font-size:11.5px}
+  table.acoes th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:#9aa2af;border-bottom:1px solid var(--linha);padding:3px 6px 5px}
+  table.acoes td{padding:6px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+  table.acoes td.resp{color:var(--cinza);white-space:nowrap}
+  table.acoes td.prazo{white-space:nowrap;font-weight:600}
+
+  .rodape{margin-top:16px;border-top:1px solid var(--linha);padding-top:8px;font-size:10px;color:#9aa2af;display:flex;justify-content:space-between}
+  .legenda{font-size:10px;color:#9aa2af;margin-top:6px}
+  .legenda b{color:var(--cinza)}
+
+  @media print{
+    body{background:#fff;padding:0}
+    .pagina{box-shadow:none;border:none;border-radius:0;max-width:100%;padding:14px 18px}
+    @page{size:A4;margin:12mm}
+  }
+  @media(max-width:680px){.kpis,.trends{grid-template-columns:1fr 1fr}.duas{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="pagina">
+
+  <!-- CABEÇALHO -->
+  <div class="cab">
+    <div>
+      <h1>Assistente de IA — Relatório Semanal à Diretoria</h1>
+      <div class="sub">NovaTech · Atendimento (RAG + bot no Teams) · Piloto em produção</div>
+    </div>
+    <div class="meta">
+      <div>Semana de referência</div>
+      <b>06 – 12 jul 2026</b><br>
+      <div style="margin-top:4px">Emitido em 13/jul/2026</div>
+      <div>Semana 12 do piloto</div>
+    </div>
+  </div>
+
+  <!-- VEREDITO -->
+  <div class="veredito verde">
+    <div class="farol"></div>
+    <div class="txt">
+      <div class="lbl">Veredito da semana</div>
+      <div class="frase">O assistente MELHOROU nesta semana</div>
+      <div class="resumo">Menos feedback negativo <b>com mais gente reagindo</b> (melhoria real, não fadiga de feedback), maior volume de uso e nenhum alerta técnico ou incidente crítico disparado.</div>
+    </div>
+  </div>
+
+  <!-- KPIs PRINCIPAIS -->
+  <h2 class="sec">Indicadores-chave · 4 dimensões</h2>
+  <div class="kpis">
+
+    <div class="kpi">
+      <div class="dim">Uso</div>
+      <div class="nome">Perguntas por dia (média)</div>
+      <div class="linha-val"><span class="val">342</span><span class="seta bom">↑</span></div>
+      <div class="ant">Sem. anterior: 298 · +15%</div>
+    </div>
+
+    <div class="kpi">
+      <div class="dim">Qualidade</div>
+      <div class="nome">% de feedback negativo</div>
+      <div class="linha-val"><span class="val">9,2%</span><span class="seta bom">↓</span></div>
+      <div class="ant">Sem. anterior: 11,8% · alerta em 15%</div>
+    </div>
+
+    <div class="kpi">
+      <div class="dim">Qualidade</div>
+      <div class="nome">Participação no feedback (👍/👎)</div>
+      <div class="linha-val"><span class="val">64%</span><span class="seta bom">↑</span></div>
+      <div class="ant">Sem. anterior: 61% · valida a queda acima</div>
+    </div>
+
+    <div class="kpi">
+      <div class="dim">Qualidade</div>
+      <div class="nome">% de escalações para humano</div>
+      <div class="linha-val"><span class="val">14%</span><span class="seta bom">↓</span></div>
+      <div class="ant">Sem. anterior: 17%</div>
+    </div>
+
+    <div class="kpi">
+      <div class="dim">Técnica</div>
+      <div class="nome">Disponibilidade (uptime) · lat. p95</div>
+      <div class="linha-val"><span class="val">99,7%</span><span class="seta bom">↑</span></div>
+      <div class="ant">Sem. anterior: 99,4% · p95 3,1s (era 3,4s)</div>
+    </div>
+
+    <div class="kpi">
+      <div class="dim">Conteúdo</div>
+      <div class="nome">% de perguntas sem resposta (fallback)</div>
+      <div class="linha-val"><span class="val">11%</span><span class="seta bom">↓</span></div>
+      <div class="ant">Sem. anterior: 13% · alerta em 20%</div>
+    </div>
+
+  </div>
+  <div class="legenda"><b>Setas:</b> ↑ subiu · ↓ caiu · → estável. A cor indica o efeito no negócio — <span class="bom">verde = melhorou</span>, <span class="ruim">vermelho = piorou</span> — não a direção do número.</div>
+
+  <!-- TENDÊNCIAS -->
+  <h2 class="sec">Tendência das últimas 6 semanas · indicadores críticos</h2>
+  <div class="trends">
+    <div class="trend">
+      <div class="t-nome">% de feedback negativo</div>
+      <div class="t-sub">quanto menor, melhor · sem 7→12</div>
+      <svg id="spark1" viewBox="0 0 220 46" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="trend">
+      <div class="t-nome">Perguntas por dia</div>
+      <div class="t-sub">volume de uso · sem 7→12</div>
+      <svg id="spark2" viewBox="0 0 220 46" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="trend">
+      <div class="t-nome">Participação no feedback</div>
+      <div class="t-sub">quanto maior, melhor · sem 7→12</div>
+      <svg id="spark3" viewBox="0 0 220 46" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- DESTAQUES E AÇÕES -->
+  <div class="duas">
+    <div>
+      <h2 class="sec">Destaques e riscos da semana</h2>
+      <ul class="bullets">
+        <li class="pos">Feedback negativo no menor nível da série (9,2%) <b>e</b> participação subindo para 64% — a melhoria é real, não queda de engajamento.</li>
+        <li class="pos">Volume cresceu 15% (298→342 perguntas/dia); pico entre 10h e 11h.</li>
+        <li class="pos">Disponibilidade de 99,7% e nenhum dos 4 alertas disparou na semana.</li>
+        <li class="neg">3 documentos concentram 41% das citações — dependência alta de poucas fontes.</li>
+        <li class="neg">Cluster recorrente "Política de Reembolso 2026" gerou 6 feedbacks negativos (documento desatualizado).</li>
+        <li class="info">Fallback em 11% ainda acima da meta interna de 8%.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="sec">Ações planejadas</h2>
+      <table class="acoes">
+        <thead><tr><th>Ação</th><th>Responsável</th><th>Prazo</th></tr></thead>
+        <tbody>
+          <tr><td>Reindexar "Política de Reembolso 2026" e revalidar as 6 perguntas do cluster</td><td class="resp">Product Specialist</td><td class="prazo">16/jul</td></tr>
+          <tr><td>Ajustar chunking dos 2 documentos com maior taxa de citação inválida</td><td class="resp">Tech Lead</td><td class="prazo">18/jul</td></tr>
+          <tr><td>Reduzir fallback: enriquecer índice com FAQ das perguntas sem resposta</td><td class="resp">Product Specialist</td><td class="prazo">21/jul</td></tr>
+          <tr><td>Expandir piloto de 12 para 20 atendentes</td><td class="resp">Delivery Manager</td><td class="prazo">22/jul</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="rodape">
+    <span>Fonte: logs de interação, HITL e health check · Plano de Observabilidade (uso · qualidade · técnica · conteúdo)</span>
+    <span>Delivery Manager · NovaTech</span>
+  </div>
+
+</div>
+
+<script>
+/* ====== DADOS DAS TENDÊNCIAS (6 semanas, ordem antiga → atual) ====== */
+const SERIES = {
+  spark1: { dados:[14.1, 13.2, 12.5, 11.8, 10.5, 9.2], melhorQuando:"baixo" }, // % feedback negativo
+  spark2: { dados:[210, 245, 268, 298, 320, 342],       melhorQuando:"alto"  }, // perguntas/dia
+  spark3: { dados:[58, 59, 60, 61, 62, 64],             melhorQuando:"alto"  }  // participação %
+};
+
+function desenhar(id, cfg){
+  const svg = document.getElementById(id);
+  const W=220, H=46, pad=5;
+  const d = cfg.dados, min=Math.min(...d), max=Math.max(...d), rng=(max-min)||1;
+  const x = i => pad + i*(W-2*pad)/(d.length-1);
+  const y = v => H-pad - ((v-min)/rng)*(H-2*pad);
+  const pts = d.map((v,i)=>[x(i),y(v)]);
+  const linha = pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area = linha+" L"+x(d.length-1).toFixed(1)+" "+(H-pad)+" L"+pad+" "+(H-pad)+" Z";
+  // melhora se o último ponto for "melhor" que o primeiro conforme a direção desejada
+  const subiu = d[d.length-1] > d[0];
+  const bom = (cfg.melhorQuando==="alto") ? subiu : !subiu;
+  const cor = bom ? "#1a8a4a" : "#c0392b";
+  const corFill = bom ? "rgba(26,138,74,.10)" : "rgba(192,57,43,.10)";
+  const last = pts[pts.length-1];
+  svg.innerHTML =
+    `<path d="${area}" fill="${corFill}" stroke="none"/>`+
+    `<path d="${linha}" fill="none" stroke="${cor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`+
+    `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3" fill="${cor}"/>`;
+}
+Object.entries(SERIES).forEach(([id,cfg])=>desenhar(id,cfg));
+</script>
+</body>
+</html>

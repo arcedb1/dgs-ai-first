@@ -1,0 +1,138 @@
+EXERCÍCIO 3.2 — DELIVERY MANAGER — REVISÃO CRÍTICA DE OUTPUTS DE IA (OBSERVABILIDADE)
+Histórico da sessão: Plano de Observabilidade + Revisão Crítica (the-fool) + Mitigação
+======================================================================================
+
+--------------------------------------------------------------
+PROMPT 1 — Geração do Plano de Observabilidade
+--------------------------------------------------------------
+
+Com base nos resultados da analise dos riscos e também do contexto a seguir:
+Contexto: assistente de IA (RAG + bot no Teams) da NovaTech recém em produção,
+usado por atendentes. Já sabemos que ~12% das respostas podem sair incorretas
+(alucinação, doc desatualizado, chunk errado) e que respostas trazem
+confidence_score e fonte. A NovaTech quer saber, semanalmente, se o assistente
+está MELHORANDO ou PIORANDO.
+
+Defina um PLANO DE OBSERVABILIDADE cobrindo as 4 dimensões:
+1. Métricas de USO (ex.: perguntas/dia, tempo de resposta, usuários ativos)
+2. Métricas de QUALIDADE (ex.: % de feedback negativo, % de escalações para
+   humano)
+3. Métricas TÉCNICAS (ex.: latência p95, taxa de erro/timeout)
+4. Métricas de CONTEÚDO (ex.: documentos mais consultados, perguntas sem
+   resposta)
+
+Para cada dimensão, liste as métricas específicas, como são medidas e a fonte
+do dado.
+
+Depois, defina:
+- 2 a 3 ALERTAS com thresholds concretos e acionáveis. Cada alerta deve ter:
+  gatilho numérico + janela de tempo + quem é notificado + canal.
+- Um FEEDBACK LOOP simples que conecte o atendente à correção do assistente:
+  como o atendente sinaliza uma resposta ruim, quem faz triagem, como vira
+  ação (reindexar doc, ajustar prompt, corrigir chunk, adicionar à base) e
+  como fecha o ciclo. Descrever em passos numerados, do clique do atendente
+  até a correção em produção.
+
+Formato: tabelas por dimensão + lista de alertas + fluxo do feedback loop.
+
+--------------------------------------------------------------
+RESULTADO 1 — Arquivo gerado: 04-plano-observabilidade.md
+--------------------------------------------------------------
+
+4 dimensões cobertas com métrica + método de medição + fonte:
+- Uso: perguntas/dia, usuários ativos, tempo médio de resposta, horário de
+  pico.
+- Qualidade: % feedback negativo, % escalações, % retidas para HITL,
+  distribuição de confidence_score, taxa de erro de citação.
+- Técnica: latência p95, taxa de erro/timeout, disponibilidade, falha do
+  circuit breaker.
+- Conteúdo: documentos mais consultados, perguntas sem resposta (fallback),
+  documentos nunca consultados, perguntas recorrentes sem resposta
+  satisfatória (clusterização semântica).
+
+3 alertas iniciais:
+1. % feedback negativo > 15% em 24h → Product Specialist + Tech Lead →
+   #novatech-ai-incidentes.
+2. Latência p95 > 5s OU erro/timeout > 5% em 30 min → Tech Lead (on-call) →
+   #novatech-ai-incidentes + alerta automático.
+3. % perguntas sem resposta (fallback) > 20% em 24h → Product Specialist →
+   #novatech-ai-observabilidade.
+
+Feedback loop em 9 passos: sinalização (👎) → registro → triagem semanal
+(Product Specialist, categorias: doc desatualizado / chunk errado /
+alucinação / fora de escopo) → ação por categoria → priorização por
+recorrência → implementação em staging → validação → deploy → fechamento do
+ciclo.
+
+--------------------------------------------------------------
+PROMPT 2 — Revisão crítica com skill "the-fool" (/the-fool)
+--------------------------------------------------------------
+
+analise os riscos do plano de observabilidade
+
+Modo selecionado pelo usuário: Encontrar fraquezas → Modos de falha (pré-mortem).
+
+--------------------------------------------------------------
+RESULTADO 2 — Pré-mortem do plano de observabilidade
+--------------------------------------------------------------
+
+Steelman da tese: o plano permite responder semanalmente "melhorando ou
+piorando", cobre as 4 dimensões com fonte de dado explícita, tem alertas
+ativos (não só dashboard passivo) e fecha o ciclo do feedback do atendente até
+correção categorizada por causa raiz.
+
+4 falhas identificadas:
+
+1. "A métrica melhora, o produto não" (Likelihood: Alta | Impact: Alto)
+   % de feedback negativo pode cair porque atendentes pararam de reagir
+   (feedback fatigue), não porque a qualidade melhorou — o plano não media
+   taxa de participação no feedback.
+   Mitigação: adicionar métrica de "taxa de participação no feedback" e
+   alerta se cair >30% vs. média móvel.
+
+2. Alerta de latência dispara sempre no mesmo horário e vira ruído ignorado
+   (Likelihood: Média | Impact: Alto)
+   Threshold fixo (5s) não distingue pico normal de degradação real —
+   fadiga de alerta atrasa reação em incidente real.
+   Mitigação: threshold com baseline por horário em vez de valor fixo
+   absoluto.
+
+3. Feedback loop trava na triagem semanal por falta de backup do Product
+   Specialist (Likelihood: Média | Impact: Médio)
+   Nenhum backup nomeado; ausência de 2 semanas acumula fila sem triagem
+   sem que nenhum alerta detecte a paralisação do processo.
+   Mitigação: nomear backup explícito + SLA máximo de atraso na triagem com
+   alerta próprio.
+
+4. Clusterização semântica de "perguntas recorrentes sem resposta" nunca
+   roda de fato (Likelihood: Média | Impact: Médio)
+   Métrica exige pipeline real (embeddings + clustering), mas nenhum
+   responsável foi nomeado — linha do dashboard fica estruturalmente vazia.
+   Mitigação: nomear responsável técnico pelo pipeline ou substituir por
+   versão manual simplificada no curto prazo.
+
+Verificação por inversão: falhas #1, #2 e #3 confirmadas como existentes hoje
+no plano original; #4 não avaliada por escopo desta rodada.
+
+--------------------------------------------------------------
+PROMPT 3 — Implementação da mitigação
+--------------------------------------------------------------
+
+implementar item de mitigação 1
+
+--------------------------------------------------------------
+RESULTADO 3 — Atualização em 04-plano-observabilidade.md
+--------------------------------------------------------------
+
+- Nova métrica na dimensão de Qualidade: "Taxa de participação no feedback"
+  ((respostas com clique 👍 ou 👎) / total de respostas entregues) × 100,
+  cruzando o botão de feedback do Teams com o log de interação.
+- Novo Alerta 4: dispara se a taxa de participação cair >30% em relação à
+  média móvel das últimas 4 semanas, em janela de 7 dias, notificando o
+  Product Specialist no canal #novatech-ai-observabilidade.
+- Nota explicando o propósito: evitar que uma queda de feedback negativo seja
+  lida como melhoria real quando, na verdade, é queda de engajamento
+  (feedback fatigue).
+
+Mitigações #2, #3 e #4 permanecem pendentes de implementação (não solicitadas
+nesta sessão).

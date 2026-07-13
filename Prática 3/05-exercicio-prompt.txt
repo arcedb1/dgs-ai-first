@@ -1,0 +1,117 @@
+================================================================================
+HISTÓRICO DA SESSÃO — Exercício de Prompt (Delivery Manager)
+Projeto: dgs-ia-first — Prática 2 e 3
+Papel: Delivery Manager da DB1
+Data: 13/jul/2026
+Contexto: criação do Relatório Semanal à Diretoria do assistente de IA da NovaTech,
+a partir do Plano de Observabilidade (04-plano-observabilidade.md).
+================================================================================
+
+
+--------------------------------------------------------------------------------
+TURNO 1 — PROMPT DO USUÁRIO
+--------------------------------------------------------------------------------
+Arquivo anexado: 04-plano-observabilidade.md
+
+"como Delivery Manager.
+Com base no plano de observabilidade (4 dimensões: uso, qualidade, técnica,
+conteúdo) do assistente de IA da NovaTech, crie o TEMPLATE DO RELATÓRIO SEMANAL
+para a diretoria da NovaTech.
+Requisitos:
+- 1 página, legível por um executivo em até 2 minutos.
+- Bloco de topo com veredito claro: "O assistente MELHOROU / ESTÁVEL / PIOROU
+  nesta semana", com indicador visual (verde/amarelo/vermelho).
+- KPIs principais das 4 dimensões, cada um com: valor da semana, valor da semana
+  anterior, e seta de tendência (↑ ↓ →). Foque nos 5-6 KPIs que mais importam
+  para a diretoria (não despeje todas as métricas).
+- Mini gráfico de tendência das últimas semanas para os 2-3 KPIs críticos
+  (ex.: % feedback negativo, perguntas/dia).
+- Seção "Destaques e riscos da semana" em bullets curtos.
+- Seção "Ações planejadas" (o que o time vai fazer, responsável, prazo).
+- Cabeçalho com semana de referência e data.
+Preencha com dados de exemplo realistas para mostrar como fica preenchido. Gere
+como artefato visual (HTML) pronto para apresentar e disponibilize também uma
+versão editável."
+
+--------------------------------------------------------------------------------
+TURNO 1 — RESPOSTA / AÇÕES
+--------------------------------------------------------------------------------
+1. Leitura do plano de observabilidade (4 dimensões, alertas, feedback loop).
+2. Pergunta de esclarecimento (formato da versão editável).
+   -> Resposta do usuário: "HTML editável".
+3. Decisões de Delivery Manager embutidas no template:
+   - Veredito no topo com farol verde/amarelo/vermelho + frase única.
+   - Seleção de 6 KPIs cobrindo as 4 dimensões (sem despejar todas as métricas):
+       Uso ......... Perguntas por dia (média)
+       Qualidade ... % de feedback negativo (alerta em 15%)
+       Qualidade ... Taxa de participação no feedback (guarda contra fadiga)
+       Qualidade ... % de escalações para humano
+       Técnica ..... Disponibilidade (uptime) + latência p95
+       Conteúdo .... % de perguntas sem resposta / fallback (alerta em 20%)
+   - Setas ↑ ↓ → coloridas pelo EFEITO NO NEGÓCIO (verde=melhorou, vermelho=piorou),
+     não pela direção do número.
+   - Par "% feedback negativo" + "participação no feedback" para separar
+     melhoria real de queda de engajamento (falso-positivo do alerta #4 do plano).
+   - Mini gráficos (sparklines) para 3 KPIs críticos, série de 6 semanas.
+   - Destaques e riscos em bullets; Ações planejadas com responsável e prazo.
+
+DADOS DE EXEMPLO USADOS (semana de referência 06–12 jul 2026, semana 12 do piloto):
+   Veredito: MELHOROU (verde)
+   Perguntas/dia ................ 342  (anterior 298, +15%)  ↑
+   % feedback negativo .......... 9,2% (anterior 11,8%)      ↓
+   Participação no feedback ..... 64%  (anterior 61%)        ↑
+   % escalações para humano ..... 14%  (anterior 17%)        ↓
+   Disponibilidade / p95 ........ 99,7% (anterior 99,4%) / 3,1s (era 3,4s)  ↑
+   % perguntas sem resposta ..... 11%  (anterior 13%)        ↓
+   Séries (6 semanas, S7->S12):
+     % feedback negativo ... 14,1 / 13,2 / 12,5 / 11,8 / 10,5 / 9,2
+     Perguntas por dia ..... 210 / 245 / 268 / 298 / 320 / 342
+     Participação (%) ...... 58 / 59 / 60 / 61 / 62 / 64
+
+DELIVERABLES DO TURNO 1:
+   - relatorio-semanal-novatech.html          (visual pronto para apresentar)
+   - relatorio-semanal-novatech-EDITAVEL.html (mesma aparência, com comentários
+                                               [EDITAR ...] em cada campo)
+   - Prévia renderizada inline no chat.
+
+
+--------------------------------------------------------------------------------
+TURNO 2 — PROMPT DO USUÁRIO
+--------------------------------------------------------------------------------
+"crie o editável em word"
+
+--------------------------------------------------------------------------------
+TURNO 2 — RESPOSTA / AÇÕES
+--------------------------------------------------------------------------------
+- Geração de documento Word (.docx) editável de 1 página com o mesmo conteúdo.
+- Adaptações para o formato Word:
+   - Veredito em célula sombreada verde no topo.
+   - Tabela dos 6 KPIs (Dimensão | Indicador | Semana | Anterior | Tendência),
+     setas coloridas por efeito no negócio.
+   - Como Word não renderiza sparklines, os mini gráficos viraram uma TABELA DE
+     TENDÊNCIA de 6 semanas (S7->S12) com valores e coluna de direção.
+   - Destaques/riscos em bullets com marcadores ▲ / ▼ / ■.
+   - Ações planejadas em tabela (Ação | Responsável | Prazo).
+- Verificação: conversão para PDF e revisão visual (cabe em 1 página).
+- Ajuste: emojis 👍/👎 substituídos por texto ("Taxa de participação no feedback")
+  para evitar caracteres quebrados em algumas fontes.
+
+DELIVERABLE DO TURNO 2:
+   - relatorio-semanal-novatech-EDITAVEL.docx
+
+
+--------------------------------------------------------------------------------
+TURNO 3 — PROMPT DO USUÁRIO
+--------------------------------------------------------------------------------
+"exporte o histórico desta sessão para o arquivo 05-exercicio-prompt.txt"
+
+--------------------------------------------------------------------------------
+TURNO 3 — RESPOSTA / AÇÕES
+--------------------------------------------------------------------------------
+- Geração deste arquivo (05-exercicio-prompt.txt) com o histórico da sessão.
+  (O transcript da sessão em execução não é acessível pela ferramenta de leitura;
+   o histórico foi reconstruído fielmente a partir do contexto da conversa.)
+
+================================================================================
+FIM DO HISTÓRICO
+================================================================================

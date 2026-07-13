@@ -1,0 +1,112 @@
+EXERCÍCIO 3.1 — DELIVERY MANAGER — HARNESS ENGINEERING
+Histórico da sessão: Plano de Rollback + Revisão Crítica (the-fool)
+==============================================================
+
+--------------------------------------------------------------
+PROMPT 1 — Geração do Plano de Rollback
+--------------------------------------------------------------
+
+Como Delivery Manager. Defina um PLANO DE ROLLBACK simples e acionável para o
+go-live do assistente de IA da NovaTech (RAG + bot no Teams).
+
+O plano NÃO pode ser vago ("avaliar a situação"). Para cada cenário de falha,
+especifique:
+- TRIGGER: o sinal objetivo e mensurável de que algo deu errado (ex.: taxa de
+  respostas incorretas reportadas > X% em Y horas; pico de respostas sem fonte;
+  vazamento de dado sensível em log; indisponibilidade do endpoint > Z min).
+- QUEM DECIDE: o papel responsável por acionar o desligamento (nome do papel,
+  não "o time").
+- AÇÃO: o que exatamente é feito (ex.: desativar o bot no Teams, voltar para
+  atendimento humano 100%, reverter para versão anterior do índice, congelar
+  ingestão).
+- COMUNICAÇÃO: quem é avisado e em quanto tempo.
+
+Inclua de 3 a 5 triggers cobrindo qualidade, segurança/dados sensíveis e
+disponibilidade. Apresente como tabela: Trigger | Limite objetivo | Quem decide
+| Ação | Comunicação.
+No final, defina o critério de "kill switch imediato" (falha grave que dispensa
+deliberação) e quem tem autoridade para acioná-lo sozinho.
+
+Contexto anexado: 01-criterios-golive.md, 02-dashboard-readiness-golive.xlsx
+
+--------------------------------------------------------------
+RESULTADO 1 — Arquivo gerado: 03-plano-rollback.md
+--------------------------------------------------------------
+
+Tabela de 5 triggers:
+1. Qualidade — taxa de erro reportada (>15% em 2h) → Product Specialist →
+   desativar bot, reverter para atendimento 100% humano → aviso em 10 min.
+2. Qualidade — respostas sem fonte (>10% em 30 min) → Tech Lead → congelar
+   endpoint, reverter deploy → aviso em 15 min.
+3. Segurança/dados sensíveis (qualquer ocorrência confirmada) → Tech Lead
+   (autoridade de kill switch) → desligar bot imediatamente, revogar acesso,
+   purge de log → aviso em 5 min.
+4. Disponibilidade — endpoint fora do ar >10 min → Tech Lead → reverter para
+   atendimento humano, congelar ingestão → aviso em 10 min.
+5. Governança — fila de HITL travada (>3 respostas aguardando >10 min) →
+   Product Specialist → bloquear novas perguntas sensíveis/baixa confiança,
+   acionar revisor backup → aviso em 10 min.
+
+Kill switch imediato: vazamento confirmado de dado sensível — Tech Lead aciona
+sozinho, sem aprovação prévia, por ser dano já consumado (não reversível como
+os demais cenários).
+
+--------------------------------------------------------------
+PROMPT 2 — Revisão crítica com skill "the-fool" (/the-fool)
+--------------------------------------------------------------
+
+analise o plano de rollback e encontre riscos reais.
+Dê sugestões para mitigar os riscos mapeados
+
+Modo selecionado pelo usuário: Encontrar fraquezas → Modos de falha (pré-mortem).
+
+--------------------------------------------------------------
+RESULTADO 2 — Pré-mortem do plano de rollback
+--------------------------------------------------------------
+
+Steelman da tese: o plano garante sinal objetivo + responsável nomeado + ação
+concreta + SLA de comunicação para qualquer desvio sério, com kill switch
+isolado corretamente para o único cenário de dano já consumado.
+
+4 falhas identificadas:
+
+1. "Ninguém aperta o botão" (Likelihood: Alta | Impact: Alto)
+   Durante a demo, ninguém está designado a observar o dashboard em tempo
+   real — o plano nomeia "quem decide" mas não "quem monitora" na janela
+   crítica.
+   Mitigação: nomear um "observador de plantão" durante a demo, separado de
+   quem apresenta, com autoridade para interromper verbalmente.
+
+2. Trigger de segurança sem mecanismo de detecção ativa (Likelihood: Alta |
+   Impact: Alto)
+   O kill switch depende de "vazamento confirmado", mas só existe prevenção
+   (máscara de log), não detecção ativa de vazamento que já passou.
+   Mitigação: adicionar scan automático de PII na resposta antes de chegar ao
+   atendente, não só na camada de log.
+
+3. Ação de rollback de deploy nunca testada (Likelihood: Média | Impact: Alto)
+   "Reverter para última versão estável" pode apontar para um índice
+   desatualizado e reintroduzir o problema de qualidade que o HITL resolvia.
+   Mitigação: executar dry-run do rollback antes da demo, confirmando que a
+   versão revertida também tem HITL ativo.
+
+4. Autoridade ambígua entre Tech Lead e Product Specialist (Likelihood: Média
+   | Impact: Médio)
+   Dois triggers de qualidade com decisores diferentes podem disparar juntos
+   pela mesma causa raiz, gerando difusão de responsabilidade.
+   Mitigação: regra de precedência — "quem vir primeiro, desliga primeiro".
+
+Verificação por inversão:
+- Ninguém monitorando ativamente durante a demo: SIM, existe hoje.
+- Detecção passiva em vez de ativa: PARCIALMENTE, existe hoje.
+- Rollback nunca ensaiado: DESCONHECIDO, não confirmado no plano.
+
+--------------------------------------------------------------
+PROMPT 3 — Escopo do próximo exercício
+--------------------------------------------------------------
+
+os pontos de observabilidade vão estar nos próximos exercicios.
+Então vamos manter o plano desta forma
+
+Decisão: manter 03-plano-rollback.md como está; observabilidade fica reservada
+para o Exercício 3.2 (plano de observabilidade + relatório semanal).

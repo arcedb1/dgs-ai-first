@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -f \"c:/Users/adriano.passamani/OneDrive - DB1 Group/Documentos/treinamentos IA/dgs-ia-first/dgs-ai-first/dump_out.txt\")",
+      "Bash(python -c \"import openpyxl; print\\(openpyxl.__version__\\)\")",
+      "Bash(python3)",
+      "Bash(python3 -c ' *)",
+      "Bash(python \"C:\\\\Users\\\\ADRIAN~1.PAS\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-adriano-passamani-OneDrive---DB1-Group-Documentos-treinamentos-IA-dgs-ia-first-dgs-ai-first\\\\b910ec36-0b57-4cf2-b92d-73c1008aa88d\\\\scratchpad\\\\inspect.py\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\adriano.passamani\\OneDrive - DB1 Group\\Documentos\\treinamentos IA\\dgs-ia-first\\dgs-ai-first"
+    ]
+  }
+}

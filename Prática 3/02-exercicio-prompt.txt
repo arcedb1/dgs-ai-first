@@ -1,0 +1,99 @@
+================================================================================
+HISTÓRICO DA SESSÃO — Dashboard de Readiness Go-Live (NovaTech AI Assistant)
+Exercício 3.1 — Delivery Manager | Harness Engineering
+Projeto: dgs-ia-first - Pratica 2
+Data: 12/07/2026
+================================================================================
+
+--------------------------------------------------------------------------------
+[ANEXO] Arquivo enviado pelo usuário: 01-criterios-golive.md
+--------------------------------------------------------------------------------
+Contém os critérios de go-live organizados nas 5 camadas do harness (Tool
+Orchestration, Verification Loops, Context & Memory, Guardrails/HITL,
+Observability), cada critério classificado como BLOQUEANTE ou DESEJÁVEL, mais o
+detalhamento da capacidade operacional do HITL e o resumo dos 5 pontos que
+impedem o go-live hoje.
+
+
+================================================================================
+TURNO 1 — USUÁRIO
+================================================================================
+Como Delivery Manager da DB1.
+Com base nos critérios de go-live definidos (5 camadas do harness: Tool
+orchestration, Verification loops, Context & memory, Guardrails/HITL,
+Observability), crie um DASHBOARD DE READINESS do go-live do assistente de IA da
+NovaTech.
+
+Requisitos do dashboard:
+- Uma linha por critério, agrupado pelas 5 camadas.
+- Colunas: Critério | Camada | Status (verde/amarelo/vermelho) | Bloqueante?
+  (Sim/Não) | Responsável | Data-alvo | Observação.
+- Destaque visual do status por cor.
+- Um indicador no topo: "Go-live autorizado? Sim/Não" que fique VERMELHO enquanto
+  houver qualquer critério BLOQUEANTE fora do verde.
+- Contadores: total de critérios, quantos verdes/amarelos/vermelhos, e quantos
+  bloqueantes pendentes.
+- Data-alvo coerente com a demo em 2 semanas (a partir de 12/07/2026).
+Preencha com status realistas dados os problemas atuais (12% de respostas
+incorretas, falta de structured output, violação do AGENTS.md, cobertura 75%).
+Onde eu precisar decidir responsável ou data, deixe um placeholder claro.
+Gere como um artefato/dashboard visual navegável (HTML) e também disponibilize os
+dados em planilha para eu editar.
+
+
+================================================================================
+TURNO 1 — ASSISTENTE (Delivery Manager)
+================================================================================
+
+AÇÕES EXECUTADAS:
+1. Leitura do arquivo 01-criterios-golive.md para extrair os 28 critérios das
+   5 camadas.
+2. Modelagem dos dados de readiness (status, bloqueante, responsável, data-alvo,
+   observação).
+3. Construção do dashboard HTML navegável (dashboard-readiness-golive.html).
+4. Geração da planilha editável (dashboard-readiness-golive.xlsx) com fórmulas.
+5. Verificação: recalc sem erros e conferência dos contadores e do indicador de
+   go-live.
+
+ENTREGÁVEIS:
+- dashboard-readiness-golive.html — indicador de topo "Go-live autorizado? NÃO"
+  em vermelho; filtros (verde/amarelo/vermelho/só bloqueantes); camadas
+  recolhíveis; destaque de cor por status; contadores automáticos.
+- dashboard-readiness-golive.xlsx — aba "Readiness" com dropdowns em Status e
+  Bloqueante e cores condicionais; aba "Resumo" com go-live e contadores por
+  fórmula (COUNTIF/COUNTIFS), recalculando ao editar.
+
+STATUS APURADO (realista, dados os problemas conhecidos):
+- 28 critérios no total.
+- 0 verdes | 15 amarelos | 13 vermelhos.
+- 18 bloqueantes, todos pendentes -> Go-live NÃO autorizado.
+- Vermelhos críticos: structured output, verificação de fonte, HITL, correção do
+  módulo que violou o AGENTS.md, logging/observability.
+- Datas-alvo escalonadas entre 16/07 e 25/07, antes da demo de 26/07/2026.
+  Correção do AGENTS.md (17/07) e revisão de código IA (16/07) priorizadas por
+  serem pré-requisitos.
+- Responsáveis não definidos deixados como placeholder "[DEFINIR — papel]";
+  datas indefinidas como "Pós-demo" / "Mitigar até...".
+- Desejáveis (cobertura 90%, multi-agente, cache, tracing) em amarelo, fora do
+  caminho crítico.
+
+OFERTA FINAL:
+- Gerar versão em slide (.pptx) do indicador de go-live para a diretoria, ou
+  agendar rerun semanal do status até a demo.
+
+
+================================================================================
+TURNO 2 — USUÁRIO
+================================================================================
+exporte o histórico desta sessão para o arquivo 02-exercicio-prompt.txt
+
+
+================================================================================
+TURNO 2 — ASSISTENTE (Delivery Manager)
+================================================================================
+Exportou o histórico desta sessão para o arquivo 02-exercicio-prompt.txt (este
+arquivo).
+
+================================================================================
+FIM DO HISTÓRICO
+================================================================================

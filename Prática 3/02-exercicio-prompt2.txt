@@ -1,0 +1,120 @@
+================================================================================
+HISTÓRICO DA SESSÃO — Análise de Riscos e Disclaimer de Responsáveis
+Exercício 3.1 (continuação) — Delivery Manager | Harness Engineering
+Projeto: dgs-ia-first - Pratica 3
+Data: 12-13/07/2026
+================================================================================
+
+--------------------------------------------------------------------------------
+[ANEXO] Arquivos analisados
+--------------------------------------------------------------------------------
+- 02-dashboard-readiness-golive.xlsx (abas Resumo + Readiness, 28 critérios)
+- 02-dashboard-readiness-golive.html (dashboard navegável equivalente)
+- 01-criterios-golive.md (critérios de go-live originais)
+
+
+================================================================================
+TURNO 1 — USUÁRIO
+================================================================================
+/the-fool — Analise o arquivo 02-dashboard-readiness-golive.xlsx e check os
+riscos dos itens bloqueantes, e proponha soluções para evitar possíveis
+bloqueios.
+
+
+================================================================================
+TURNO 1 — ASSISTENTE (skill: the-fool)
+================================================================================
+
+AÇÕES EXECUTADAS:
+1. Leitura completa do xlsx (abas Resumo e Readiness), do HTML e do md de
+   critérios via agente de pesquisa, extraindo os 28 critérios e os 18
+   bloqueantes com status/responsável/data-alvo/observação.
+2. Restatement da tese (steelman): a equipe consegue resolver os 18 bloqueantes
+   até as datas-alvo (16-25/07/2026) e viabilizar a demo de 26/07/2026, mesmo
+   com responsáveis ainda como placeholder e cobertura de testes em 75%.
+   Confirmado com o usuário.
+3. Seleção de modo via AskUserQuestion -> usuário escolheu "Encontrar falhas
+   (Pre-mortem)".
+4. Aplicação do framework de pre-mortem (Gary Klein) + scan de vieses
+   cognitivos, gerando 5 narrativas de falha específicas:
+   a. Cascata do "depende de" — atraso no structured output arrasta HITL,
+      verificação de fonte e observability.
+   b. Revisor fantasma no momento H — revisores de HITL não nomeados/
+      indisponíveis na janela da demo.
+   c. Módulo de feedback corrigido sem re-teste com os 5 pilotos reais.
+   d. Reclassificação silenciosa de bloqueante -> desejável sob pressão de
+      prazo, sem decisão formal do DM.
+   e. Reindexação manual (não-bloqueante) esquecida, causando resposta
+      confiante porém desatualizada na demo.
+5. Para cada falha: consequence chain (1º/2º/3º ordem), sinais de alerta
+   precoces, mitigação concreta e inversion check ("o que garantiria a
+   falha e algo disso já existe hoje?").
+
+ENTREGÁVEL:
+- Pre-mortem completo com 5 falhas, sinais de alerta, tabela de mitigações e
+  checagem de inversão, com pergunta de fechamento pedindo validação do
+  usuário sobre cada cenário antes da síntese final.
+
+STATUS: aguardando resposta do usuário aos 5 cenários (síntese ainda não
+fechada nesta sessão).
+
+
+================================================================================
+TURNO 2 — USUÁRIO (via seleção de IDE)
+================================================================================
+Incluir na parte inicial dos arquivos 02-dashboard-readiness-golive.html e
+02-dashboard-readiness-golive.xlsx um disclaimer sobre a necessidade da
+definição dos responsáveis antes do início do go-live, pois isto está
+atrelado diretamente aos 18 itens bloqueantes.
+
+
+================================================================================
+TURNO 2 — ASSISTENTE (Delivery Manager)
+================================================================================
+
+AÇÕES EXECUTADAS:
+1. HTML: inserida caixa de aviso (CSS .disclaimer, laranja/vermelho) logo
+   abaixo do cabeçalho, antes do indicador de go-live, com o texto do
+   disclaimer.
+2. XLSX (aba Resumo): via agente, inseridas 3 linhas no topo da planilha
+   (insert_rows), célula mesclada B1:D1 com o mesmo texto, formatada como
+   alerta (negrito, cor de fonte 7C2D12, fundo FFF7ED, borda, wrap_text,
+   altura de linha 90), mantendo 2 linhas em branco como espaçador antes do
+   conteúdo original.
+3. Bug encontrado e corrigido pelo agente: insert_rows deslocou células mas
+   não reescreveu a fórmula em D8 ("Go-live autorizado?"), que ainda
+   referenciava $C$5 (endereço antigo) em vez de $C$8. Corrigido para $C$8.
+4. Verificação: aba Readiness (28/30 linhas, A1:G30) permaneceu intacta;
+   KPIs da aba Resumo continuam calculando via COUNTIF/COUNTIFS sobre
+   ranges completos, não afetados pelo deslocamento de linhas.
+
+TEXTO DO DISCLAIMER (PT-BR, inserido em ambos os arquivos):
+"Os 18 critérios classificados como Bloqueante = Sim ainda estão com o campo
+Responsável em placeholder ([DEFINIR]). A nomeação formal de um responsável
+real para cada um desses 18 itens — com confirmação de disponibilidade antes
+das respectivas datas-alvo — é pré-requisito para o início do go-live, pois
+sem responsável definido não há como garantir a execução, o prazo, nem a
+prestação de contas de cada bloqueante. Este passo deve ser concluído pelo DM
+antes de qualquer item ser tratado como 'em andamento'."
+
+ENTREGÁVEIS:
+- 02-dashboard-readiness-golive.html (atualizado, com disclaimer visível).
+- 02-dashboard-readiness-golive.xlsx (atualizado, aba Resumo com disclaimer,
+  fórmulas corrigidas e validadas).
+
+
+================================================================================
+TURNO 3 — USUÁRIO
+================================================================================
+exportar histórico desta sessão em 02-exercico-prompt2.txt
+
+
+================================================================================
+TURNO 3 — ASSISTENTE (Delivery Manager)
+================================================================================
+Exportou o histórico desta sessão para o arquivo 02-exercicio-prompt2.txt
+(este arquivo).
+
+================================================================================
+FIM DO HISTÓRICO
+================================================================================
