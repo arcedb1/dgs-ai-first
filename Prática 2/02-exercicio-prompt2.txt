@@ -1,0 +1,65 @@
+Sessão exportada — Governança de Specs (SDD) NovaTech Assistant
+
+Arquivo base: 02-GOVERNANCE.md
+
+Resumo da sessão:
+- Elaboração do documento de governança de Spec Driven Development (SDD) para o projeto NovaTech Assistant, cobrindo os 5 módulos iniciais (pipeline de ingestão, API de busca, API de feedback, bot do Teams, painel web).
+- Definição de responsabilidades por artefato (requirements/plan/tasks): quem cria, revisa e aprova cada um, com justificativa por competência de papel.
+- Definição de nomenclatura de pastas/arquivos e esquema de versionamento por status (rascunho/em-revisao/aprovado/revisao-solicitada), convivendo com o histórico do Git.
+- Estrutura de diretórios (`/specs/<modulo>/`) alinhada à árvore de repositório já definida no Anexo C.
+- Checkpoints humanos (Gates 1 a 4) reafirmados na ótica de specs, com critérios de validação, aprovador e local de registro.
+- Regras de rastreabilidade: propagação de mudança de requirements até tasks, e rastro spec ↔ código ↔ testes.
+- Princípio explícito de que specs são artefatos vivos, não documentos escritos uma única vez.
+- Revisão crítica do documento via skill "the-fool" (modo Red Team/adversarial), simulando um cliente perfeccionista:
+  - Persona "Dev sob pressão de prazo": risco de commit antes da aprovação formal do Gate 2, sem enforcement técnico (CI/branch protection).
+  - Persona "Tech Lead sobrecarregado": ponto único de falha, pois é aprovador em Gates 2, 3 e parte do 4.
+  - Persona "Product Specialist rubber stamp": Gate 1 como possível auto-aprovação disfarçada.
+  - Persona "Auditor de compliance": rastreabilidade via `git log --follow` e convenção de commit message é frágil sem enforcement automático.
+  - Incentivos perversos identificados: prazo curto do Gate 2 podendo virar aprovação por cansaço; aprovação parcial de tasks incentivando ordenação estratégica das tasks fáceis primeiro.
+- Síntese e correção aplicada ao documento:
+  - Adicionada seção 4.1 "Backup de aprovador (Tech Lead indisponível)": Dev Sênior assume temporariamente a aprovação via fluxo de exceção (impacto Baixo), com registro explícito no cabeçalho da spec (`aprovado_por: ... (substituto por indisponibilidade do TL)`) e revisão do TL titular ao retornar.
+  - Demais pontos (Gate 1 como auto-aprovação aceitável em times pequenos; rastreabilidade hoje sustentada por convenção/disciplina, não por enforcement técnico automatizado) registrados como trade-offs conscientes, não corrigidos no texto a pedido do usuário.
+- Confiança final do processo revisado: MEDIUM — o desenho está correto, mas depende de disciplina humana, não de bloqueio técnico automático; teste sugerido: rodar o processo real no módulo mais simples (`feedback-api`) e observar se o Gate 2 é cumprido em 4h na prática.
+
+Conteúdo principal consolidado:
+
+# GOVERNANCE.md — Governança de Specs (SDD) do NovaTech Assistant
+
+Este documento rege como `requirements.md`, `plan.md` e `tasks.md` são criados, revisados, aprovados, nomeados, versionados e rastreados nos 5 módulos iniciais do projeto.
+
+Princípio central: specs são artefatos vivos — evoluem junto com o código e as decisões do time, e cada evolução relevante deixa rastro em Git e no board.
+
+## 1. Responsabilidades por artefato
+
+| Artefato | Cria | Revisa | Aprova |
+|---|---|---|---|
+| requirements.md | Product Specialist | Tech Lead | Product Specialist |
+| plan.md | Tech Lead | Product Specialist + Dev Sênior | Tech Lead |
+| tasks.md | Dev + Copilot | Tech Lead | Tech Lead |
+
+## 2. Nomenclatura e versionamento
+
+- Nome de pasta = slug do módulo (kebab-case); arquivos sempre `requirements.md`, `plan.md`, `tasks.md`.
+- Versionamento por status (rascunho, em-revisao, aprovado, revisao-solicitada) via cabeçalho no próprio arquivo.
+- Histórico de mudanças vive no Git (commits dedicados por mudança de status, nunca reescritos).
+
+## 3. Localização no repositório
+
+Specs em `/specs/<modulo>/`, uma pasta por módulo, nome espelhando as pastas de código correspondentes em `/src/`.
+
+## 4. Checkpoints humanos
+
+- Gate 1 (requirements→plan): aprovado pelo Product Specialist.
+- Gate 2 (tasks→implement): aprovado pelo Tech Lead.
+- Gate 3 (code→merge) e Gate 4 (tests→deploy): referenciados do checklist de validation gates já existente.
+- 4.1 Backup de aprovador: Dev Sênior assume Gate 2 temporariamente se o Tech Lead estiver indisponível, via fluxo de exceção de impacto Baixo, com registro explícito e revisão posterior do titular.
+
+## 5. Rastreabilidade
+
+- Mudança em requirements propaga para plan e tasks, com re-execução dos gates afetados.
+- Regra prática: nenhuma task pode ser implementada se seu plan/requirements de origem não estiver aprovado.
+- Rastro spec ↔ código ↔ teste mantido via convenção de commit message, PRs linkados e mapeamento verification criterion → teste.
+
+## 6. Regra de ouro
+
+Uma spec aprovada não é um contrato imutável — é o estado mais recente de um entendimento compartilhado. O que é imutável é o processo: toda mudança relevante passa pelo gate certo, aprovada pelo dono certo, com rastro em Git e no board.

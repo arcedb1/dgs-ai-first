@@ -157,6 +157,14 @@ Regras que se aplicam a **todos** os gates:
 - Reprovação não é bloqueio silencioso: gera comentário explícito (inline no arquivo ou no PR), volta o item para o status anterior no board, e abre novo ciclo com prazo definido (24h para Gates 1 e 2, conforme checklist vigente).
 - Gate 2 permite aprovação parcial: tasks já aprovadas dentro do mesmo `tasks.md` seguem para implementação sem esperar o ajuste das reprovadas.
 
+### 4.1 Backup de aprovador (Tech Lead indisponível)
+
+O Tech Lead é o único aprovador dos Gates 2, 3 e parte do 4 — um ponto único de falha se estiver de férias, desligado ou sobrecarregado. Quando isso acontece:
+
+- O Dev Sênior mais experiente do módulo assume a aprovação como **substituto temporário**, seguindo o fluxo de exceção já definido (impacto **Baixo**, conforme seção 5.3 do fluxo AI First).
+- A substituição é registrada explicitamente no campo `aprovado_por` do cabeçalho da spec, com a nota `(substituto por indisponibilidade do TL)`.
+- O Tech Lead titular revisa as aprovações feitas em sua ausência assim que retornar; qualquer discordância reabre o gate correspondente.
+
 ---
 
 ## 5. Rastreabilidade
